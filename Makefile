@@ -1,5 +1,5 @@
 # Compiler
-CXX := g++
+CXX := c++
 
 # Directories
 SRCDIR := src
