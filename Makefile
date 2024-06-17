@@ -68,4 +68,5 @@ val: clean all
 	@valgrind ./$(EXECUTABLE) $(ARGS)
 
 # Phony targets
-.PHONY: all clean run
+.PHONY: all clean run fclean re
+.DEFAULT_GOAL := all
