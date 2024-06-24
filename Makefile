@@ -67,6 +67,12 @@ test:
 val: clean all
 	@valgrind ./$(EXECUTABLE) $(ARGS)
 
+git: fclean
+	@read -p "Enter commit message: " commit_message; \
+    git add *; \
+    git commit -m "$$commit_message"
+	git push
+
 # Phony NAMEs
-.PHONY: all clean run fclean re
+.PHONY: all clean run fclean re git val
 .DEFAULT_GOAL := all
