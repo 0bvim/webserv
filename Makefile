@@ -5,10 +5,10 @@ CXX := c++
 SRCDIR := src
 INCDIR := include
 BUILDDIR := build
-TARGETDIR := bin
+NAMEDIR := bin
 
-# Target executable name
-TARGET := webserv
+# NAME executable name
+NAME := webserv
 
 # Source files
 SRCEXT := cpp
@@ -24,15 +24,15 @@ INC := -I$(INCDIR)
 CXXFLAGS = -std=c++98 -Wall -Wextra -Werror
 
 # Final executable
-EXECUTABLE := $(TARGETDIR)/$(TARGET)
+EXECUTABLE := $(NAMEDIR)/$(NAME)
 
-# Default make target
+# Default make NAME
 all: directories $(EXECUTABLE)
 
 # Ensure build directories exist
 directories:
 	@mkdir -p $(BUILDDIR)
-	@mkdir -p $(TARGETDIR)
+	@mkdir -p $(NAMEDIR)
 
 # Rule for linking object files into executable
 $(EXECUTABLE): $(OBJECTS)
@@ -45,14 +45,14 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 # Clean build artifacts
 clean:
 	@rm -rf $(BUILDDIR)
-	@rm -rf $(TARGETDIR)
+	@rm -rf $(NAMEDIR)
 
 # Run the executable
 run: clean all
 	@./$(EXECUTABLE) $(ARGS)
 
 fclean: clean
-	@rm -rf $(TARGETDIR)/$(TARGET)
+	@rm -rf $(NAMEDIR)/$(NAME)
 
 re: fclean all
 
@@ -67,6 +67,6 @@ test:
 val: clean all
 	@valgrind ./$(EXECUTABLE) $(ARGS)
 
-# Phony targets
+# Phony NAMEs
 .PHONY: all clean run fclean re
 .DEFAULT_GOAL := all
