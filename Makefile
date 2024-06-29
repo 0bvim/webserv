@@ -1,4 +1,4 @@
-CXX := g++
+CXX := c++
 CXXFLAGS := -std=c++98 -Wall -Wextra -Werror -Iinclude
 CXXFLAGS_TEST := -Wall -Wextra -Werror -Iinclude -isystem $(GTEST_DIR)/include
 
