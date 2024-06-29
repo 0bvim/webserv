@@ -1,40 +1,69 @@
-#include "../include/Client.hpp"
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-#include <stdexcept>
+// tests/test_Client.cpp
 
-class MockClient : public Client {
-public:
-  MOCK_METHOD(void, _createClientSocket, (), (override));
-  MOCK_METHOD(void, connectToServer, (const int serverSocket), (override));
+#include <gtest/gtest.h>
+#include "../include/Client.hpp"
+
+// Mocking socket functions for testing
+#include <sys/socket.h>
+#include <unistd.h>
+
+class ClientTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        // Set up any common initialization here
+    }
+
+    void TearDown() override {
+        // Clean up any common cleanup here
+    }
 };
 
-TEST(ClientTest, ConstructorDestructor) {
-  MockClient client;
-  // Verify constructor and destructor behavior
+TEST_F(ClientTest, ConstructorDestructor) {
+    Client client;
+    // If the destructor runs without exceptions, the test will pass
 }
 
-TEST(ClientTest, ConnectToServerSuccess) {
-  MockClient client;
+TEST_F(ClientTest, ConnectToServerSuccess) {
+    Client client;
+    int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    ASSERT_NE(serverSocket, -1) << "Failed to create server socket";
 
-  int serverSocket = 5; // Mock server socket
-  struct sockaddr_in address;
-  socklen_t addressSize = sizeof(address);
+    // Bind and listen to the socket to simulate a server
+    struct sockaddr_in serverAddress;
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+    serverAddress.sin_port = htons(8080);
 
-  EXPECT_CALL(client, connectToServer(serverSocket)).Times(1);
+    int bindResult = bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    ASSERT_NE(bindResult, -1) << "Failed to bind server socket";
 
-  client.connectToServer(serverSocket);
+    int listenResult = listen(serverSocket, 1);
+    ASSERT_NE(listenResult, -1) << "Failed to listen on server socket";
+
+    // Create a client socket to connect to the server
+    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    ASSERT_NE(clientSocket, -1) << "Failed to create client socket";
+
+    // Connect to the server
+    struct sockaddr_in clientAddress;
+    clientAddress.sin_family = AF_INET;
+    clientAddress.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    clientAddress.sin_port = htons(8080);
+
+    int connectResult = connect(clientSocket, (struct sockaddr*)&clientAddress, sizeof(clientAddress));
+    ASSERT_NE(connectResult, -1) << "Failed to connect to the server";
+
+    // Use the client's connectToServer method to accept the connection
+    client.connectToServer(serverSocket);
+
+    close(serverSocket);
+    close(clientSocket);
 }
 
-TEST(ClientTest, ConnectToServerFailure) {
-  MockClient client;
+TEST_F(ClientTest, ConnectToServerFailure) {
+    Client client;
+    int invalidServerSocket = -1; // Invalid server socket
 
-  int serverSocket = -1; // Invalid server socket
-
-  EXPECT_THROW(client.connectToServer(serverSocket), std::runtime_error);
+    EXPECT_THROW(client.connectToServer(invalidServerSocket), std::runtime_error);
 }
 
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
