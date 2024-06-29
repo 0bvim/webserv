@@ -1,78 +1,59 @@
-# Compiler
 CXX := c++
+CXXFLAGS := -std=c++98 -Wall -Wextra -Werror -Iinclude
 
-# Directories
-SRCDIR := src
-INCDIR := include
-BUILDDIR := build
-NAMEDIR := bin
+SRC_DIR := src
+BUILD_DIR := build
+BIN_DIR := bin
+TESTS_DIR := tests
 
-# NAME executable name
-NAME := webserv
+SRCS := $(wildcard $(SRC_DIR)/*.cpp)
+OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
+NAME := $(BIN_DIR)/webserv
 
-# Source files
-SRCEXT := cpp
-SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+TEST_SRCS := $(wildcard $(TESTS_DIR)/*.cpp)
+TEST_OBJS := $(patsubst $(TESTS_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(TEST_SRCS))
+TEST_TARGET := $(BUILD_DIR)/test_bin
 
-# Object files
-OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+GTEST_DIR := /usr/src/gtest
+GTEST_LIB := /usr/lib/libgtest.a /usr/lib/libgtest_main.a
 
-# Includes
-INC := -I$(INCDIR)
+.PHONY: all clean tests run_tests
 
-# Flags
-CXXFLAGS = -std=c++98 -Wall -Wextra -Werror
+all: $(NAME)
+	@echo ""
 
-# Final executable
-EXECUTABLE := $(NAMEDIR)/$(NAME)
+$(NAME): $(OBJS) | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Default make NAME
-all: directories $(EXECUTABLE)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-# Ensure build directories exist
-directories:
-	@mkdir -p $(BUILDDIR)
-	@mkdir -p $(NAMEDIR)
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
 
-# Rule for linking object files into executable
-$(EXECUTABLE): $(OBJECTS)
-	$(CXX) $(LDFLAGS) $^ -o $(EXECUTABLE)
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
-# Rule for compiling source files into object files
-$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
-	$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
-
-# Clean build artifacts
 clean:
-	@rm -rf $(BUILDDIR)
-	@rm -rf $(NAMEDIR)
-
-# Run the executable
-run: clean all
-	@./$(EXECUTABLE) $(ARGS)
+	rm -rf $(BUILD_DIR)
 
 fclean: clean
-	@rm -rf $(NAMEDIR)/$(NAME)
+	rm -rf $(BIN_DIR)
 
 re: fclean all
+	@echo "Rebuilding...\n"
 
-test:
-	@ echo "\nRunning test with no argument"
-	@./$(EXECUTABLE)
-	@ echo "\nRunning test with no file argument"
-	@./$(EXECUTABLE) "nan"
-	@ echo "\nRunning test with a valid file argument"
-	@./$(EXECUTABLE) "data.csv"
+run: all
+	@./$(NAME) $*
 
-val: clean all
-	@valgrind ./$(EXECUTABLE) $(ARGS)
+tests: $(TEST_TARGET)
 
-git: fclean
-	@read -p "Enter commit message: " commit_message; \
-    git add *; \
-    git commit -m "$$commit_message"
-	git push
+$(TEST_TARGET): $(OBJS) $(TEST_OBJS) | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -I$(GTEST_DIR) -pthread -o $@ $^ $(GTEST_LIB)
 
-# Phony NAMEs
-.PHONY: all clean run fclean re git val
-.DEFAULT_GOAL := all
+$(BUILD_DIR)/%.o: $(TESTS_DIR)/%.cpp | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -I$(GTEST_DIR) -c -o $@ $<
+
+run_tests: tests
+	./$(TEST_TARGET)
+	rm -f $(TEST_TARGET)

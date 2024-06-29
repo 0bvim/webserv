@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cstdlib>
 #include <errno.h>
 #include <fcntl.h>
 #include <iostream>
@@ -7,8 +8,8 @@
 
 int main() {
   // Open files using open function
-  int fd1 = open("file1.txt", O_RDONLY | O_NONBLOCK);
-  int fd2 = open("file2.txt", O_RDONLY | O_NONBLOCK);
+  int fd1 = open("file1.txt", O_RDONLY | O_NONBLOCK | O_CREAT, 0666);
+  int fd2 = open("file2.txt", O_RDONLY | O_NONBLOCK | O_CREAT, 0666);
 
   if (fd1 == -1 || fd2 == -1) {
     std::cerr << "Error opening file(s): " << strerror(errno) << std::endl;
@@ -45,6 +46,9 @@ int main() {
   // Close file descriptors
   close(fd1);
   close(fd2);
+
+	system("rm file1.txt");
+	system("rm file2.txt");
 
   return 0;
 }
