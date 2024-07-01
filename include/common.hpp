@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/06/27 14:42:52 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/01 13:50:18 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,15 @@
 # define PORT 8042
 # define BUFFER_SIZE 1024
 # define MAX_CONNECTIONS 5
+# define MAX_EVENTS 10
 
 // C libs
 # include <arpa/inet.h>
+# include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <sys/epoll.h>
 # include <unistd.h>
 
 // C++ LIBS
@@ -29,6 +32,7 @@
 # include <stdexcept>
 # include <string>
 # include <vector>
+# include <map>
 
 // FORMATTING
 # define BOLD(text) "\033[1m" << text << "\033[0m"

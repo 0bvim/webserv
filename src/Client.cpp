@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 14:46:10 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/06/27 15:05:20 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/01 14:10:31 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,11 @@ void	Client::connectToServer(const int serverSocket) {
 	if (this->_clientSocket == -1) {
 		throw std::runtime_error("Error connecting to the server");
 	}
+	this->_setNonBlock();
+}
+
+int		Client::getClientSocket(void) const {
+	return this->_clientSocket;
 }
 
 void	Client::_createClientSocket(void) {
@@ -36,3 +41,15 @@ void	Client::_createClientSocket(void) {
 	}
 }
 
+void	Client::_setNonBlock(void) {
+	int	flags;
+
+	flags = fcntl(this->_clientSocket, F_GETFL, 0);
+	if (flags == -1) {
+		throw std::runtime_error("Error getting client socket flags");
+	}
+	flags |= O_NONBLOCK;
+	if ((fcntl(this->_clientSocket, F_SETFL, flags)) == -1) {
+		throw std::runtime_error("Error setting client to nonblock");
+	}
+}
