@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/01 14:20:04 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/02 11:52:58 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ Server::Server() {
 	this->_createServerSocket();
 	this->_bindServer();
 	this->_listen();
+	this->_polling();
 }
 
 Server::~Server() {
@@ -36,7 +37,7 @@ Server::~Server() {
 void	Server::_createServerSocket(void) {
 	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_serverSocket == -1) {
-	throw std::runtime_error("Error creating the server socket");
+		throw std::runtime_error("Error creating the server socket");
 	}
 }
 
@@ -49,7 +50,7 @@ void	Server::_bindServer(void) {
 
 void	Server::_listen(void) {
 	if (listen(this->_serverSocket, MAX_CONNECTIONS) == -1) {
-	throw std::runtime_error("Error listening the server");
+		throw std::runtime_error("Error listening the server");
 	}
 }
 
@@ -62,7 +63,7 @@ void	Server::_acceptClient(void) {
 
 void	Server::_polling(void) {
 	struct epoll_event ev, events[MAX_EVENTS];
-	int listen_sock, conn_sock, nfds, epollfd;
+	int conn_sock, nfds, epollfd;
 
 	epollfd = epoll_create1(0);
 	if (epollfd == -1) {
@@ -79,7 +80,7 @@ void	Server::_polling(void) {
 			throw std::runtime_error("Error polling events");
 		}
 		for (int n = 0; n < nfds; ++n) {
-			if (events[n].data.fd == listen_sock) {
+			if (events[n].data.fd == this->_serverSocket) {
 				this->_acceptClient();
 				conn_sock = this->_clients.back()->getClientSocket();
 			}
@@ -90,6 +91,7 @@ void	Server::_polling(void) {
 			}
 			else {
 				//RESOLVER OS EVENTOS DO NOSSO SERVER
+				std::cout << "teste" << std::endl;
 				//do_use_fd(events[n].data.fd);
 			}
 		}
