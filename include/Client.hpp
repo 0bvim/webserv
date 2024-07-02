@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 14:40:02 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/06/29 12:33:58 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/01 13:47:27 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,14 @@ public:
 	Client();
 	~Client();
 	void	connectToServer(const int serverSocket);
+	int		getClientSocket(void) const;
 
 private:
 	int					_clientSocket;
 	struct sockaddr_in	_address;
 
 	void	_createClientSocket(void);
+	void	_setNonBlock(void);
 
 };
 
