@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/01 13:50:18 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/03 12:48:13 by vde-frei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 # include <unistd.h>
 
 // C++ LIBS
+# include <cstring>
+# include <csignal>
 # include <iostream>
 # include <stdexcept>
 # include <string>
@@ -47,6 +49,9 @@
 # define BROWN(text) "\033[33m" << text << "\033[0m"
 # define WHITE(text) "\033[37m" << text << "\033[0m"
 # define BLACK(text) "\033[30m" << text << "\033[0m"
+# define OUTNL(text) std::cout << text << std::endl
+# define OUT(text) std::cout << text
+# define NL std::cout << std::endl
 
 # define BG_BLUE(text) "\033[44m" << text << "\033[0m"
 # define BG_RED(text) "\033[41m" << text << "\033[0m"
