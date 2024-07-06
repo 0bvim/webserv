@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/02 11:49:50 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/06 18:40:23 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ public:
 
 private:
 	int							_serverSocket;
+	bool						_isSigInt;
 	struct sockaddr_in			_address;
 	std::vector<Client *>		_clients;
 
@@ -31,9 +32,11 @@ private:
 	void	_bindServer(void);
 	void	_listen(void);
 	void	_polling(void);
+	void	_verifyClients(void);
+	static void	_handleSignal(int c);
 
 // Client management
-	void	_acceptClient(void);
+	void	_acceptClient(int socket);
 
 };
 

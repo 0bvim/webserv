@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   common.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/03 12:48:13 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/06 17:15:43 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,15 @@
 # include <string.h>
 # include <sys/epoll.h>
 # include <unistd.h>
+# include <fstream>
+# include <stdexcept>
+# include <sstream>
+# include <csignal>
 
 // C++ LIBS
 # include <cstring>
-# include <csignal>
 # include <iostream>
+# include <iomanip>
 # include <stdexcept>
 # include <string>
 # include <vector>
