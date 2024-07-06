@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   common.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
 /*   Updated: 2024/07/13 15:19:10 by bmoretti         ###   ########.fr       */
@@ -30,6 +30,10 @@
 # include <string.h>
 # include <sys/epoll.h>
 # include <unistd.h>
+# include <fstream>
+# include <stdexcept>
+# include <sstream>
+# include <csignal>
 
 // C++ LIBS
 # include <cerrno>
