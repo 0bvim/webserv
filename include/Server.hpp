@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <cerrno>
 #include <vector>
 #include <netinet/in.h>
 #include <cstring>
@@ -13,8 +14,8 @@
 class Server
 {
 public:
-  Server(const char * ipAddress, int port);
-  ~Server();
+  Server(std::string ipAddress, int port);
+  virtual ~Server() {}
 
   // initialize the listener (server)
   int init();
@@ -29,14 +30,14 @@ protected:
   virtual void onClientDisconnected(int position);
 
 /*   handler for client messages */
-  void onMessageReceived(int clientSocket, const char *msg, int length);
+  virtual void onMessageReceived(int clientSocket, const char *msg, int length);
 
 /*   send a message to client */
-  void sendToClient(int clientSocket, const char *msg, int length);
+  virtual void sendToClient(int clientSocket, const char *msg, int length);
 
 private:
-  Server();
-  const char* m_ipAddress; //Ip address server will run on
+  Server() {}
+  std::string m_ipAddress; //Ip address server will run on
   int m_port; // Port # for the web service
   int m_socket; // Internal FD for the listening socket
   fd_set m_master; // master file descriptor set

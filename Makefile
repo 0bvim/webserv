@@ -26,10 +26,10 @@ all: $(NAME)
 	@echo "Build complete"
 
 $(NAME): $(OBJS) | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -pie -o $@ $^
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -fPIC -c -o $@ $<
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)

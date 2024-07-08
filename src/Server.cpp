@@ -1,6 +1,6 @@
 #include "../include/Server.hpp"
 
-Server::Server(const char * ipAddress, int port) : m_ipAddress(ipAddress), m_port(port) {}
+Server::Server(std::string ipAddress, int port) : m_ipAddress(ipAddress), m_port(port) {}
 
 int Server::init()
 {
@@ -16,7 +16,7 @@ int Server::init()
   sockaddr_in hint;
   hint.sin_family = AF_INET;
   hint.sin_port = htons(m_port);
-  inet_pton(AF_INET, m_ipAddress, &hint.sin_addr);
+  inet_pton(AF_INET, m_ipAddress.c_str(), &hint.sin_addr);
 
   if (bind(m_socket, (sockaddr*)&hint, sizeof(hint)) == -1)
   {
@@ -56,7 +56,7 @@ int Server::run()
     fd_set copy = m_master;
 
     // See who's talking to us
-    int socketCount = select(m_socket + 1, &copy, nullptr, nullptr, nullptr);
+    int socketCount = select(m_socket + 1, &copy, NULL, NULL, NULL);
     if (socketCount < 0)
     {
       std::cerr << "select() failed" << std::endl;
@@ -73,7 +73,7 @@ int Server::run()
         if (i == m_socket)
         {
           // Accept a new connection
-          int client = accept(m_socket, nullptr, nullptr);
+          int client = accept(m_socket, NULL, NULL);
           if (client < 0)
           {
             std::cerr << "accept() failed" << std::endl;
