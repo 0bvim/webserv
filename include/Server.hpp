@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sys/select.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -21,11 +22,22 @@ public:
   // run the listener (server)
   int run();
 protected:
+/*   handler for client connection */
+  virtual void onClientConnected(int position);
+/*   handler for client disconnection */
+
+  virtual void onClientDisconnected(int position);
+
+/*   handler for client messages */
+  void onMessageReceived(int clientSocket, const char *msg, int length);
+
+/*   send a message to client */
+  void sendToClient(int clientSocket, const char *msg, int length);
 
 private:
   Server();
   const char* m_ipAddress; //Ip address server will run on
   int m_port; // Port # for the web service
   int m_socket; // Internal FD for the listening socket
-
+  fd_set m_master; // master file descriptor set
 };

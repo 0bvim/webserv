@@ -1,5 +1,4 @@
-#include "Server.hpp"
-
+#include "../include/Server.hpp"
 
 Server::Server(const char * ipAddress, int port) : m_ipAddress(ipAddress), m_port(port) {}
 
@@ -91,7 +90,7 @@ int Server::run()
           onClientConnected(client);
         }
         else // It's an inbound message
-      {
+        {
           char buf[4096];
           memset(buf, 0, 4096);
 
@@ -130,9 +129,15 @@ int Server::run()
   return 0;
 }
 
+void Server::sendToClient(int clientSocket, const char *msg, int length)
+{
+  send(clientSocket, msg, length, 0);
 
-// this run are with epoll
+
+}
+
 // #include <sys/epoll.h>
+// this run are with epoll
 
 // int TcpListener::run()
 // {
