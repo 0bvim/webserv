@@ -20,6 +20,8 @@
 
 // C libs
 # include <arpa/inet.h>
+# include <asm-generic/socket.h>
+# include <sys/socket.h>
 # include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>

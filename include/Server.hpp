@@ -13,28 +13,27 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "Client.hpp"
 #include "common.hpp"
 
-class Server {
+class Server
+{
 public:
-	Server();
+	Server(const std::string &address, int port);
 	~Server();
 
+  void run();
+
 private:
-	int							_serverSocket;
-	struct sockaddr_in			_address;
-	std::vector<Client *>		_clients;
+/* Server initialization */
+  void _initServer();
+  void handleConnection();
+  void handleEvents();
 
-// Server initialization
-	void	_createServerSocket(void);
-	void	_bindServer(void);
-	void	_listen(void);
-	void	_polling(void);
-
-// Client management
-	void	_acceptClient(void);
-
+  std::string _address;
+  int _port;
+  int _server_fd;
+  int _epoll_fd;
+  struct epoll_event _events[MAX_EVENTS];
 };
 
 #endif
