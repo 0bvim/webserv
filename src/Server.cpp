@@ -205,7 +205,7 @@ void  Server::run()
 
 void Server::handleConnection(int client_fd)
 {
-  char buffer[1024];
+  char buffer[BUFFER_SIZE];
   while (true)
   {
     ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer) - 1);
