@@ -13,7 +13,7 @@ protected:
     std::thread serverThread;
 
     virtual void SetUp() {
-        server = new Server("127.0.0.1", 8080);
+        server = new Server("127.0.0.1", PORT);
         serverThread = std::thread([this]() {
             server->run();
         });
@@ -39,7 +39,7 @@ TEST_F(ServerTest, ServerStartsSuccessfully) {
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server_addr.sin_port = htons(8080);
+    server_addr.sin_port = htons(PORT);
 
     int result = connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr));
     ASSERT_NE(result, -1);
@@ -56,7 +56,7 @@ TEST_F(ServerTest, ServerHandlesClientConnection) {
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server_addr.sin_port = htons(8080);
+    server_addr.sin_port = htons(PORT);
 
     int result = connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr));
     ASSERT_NE(result, -1);
@@ -64,7 +64,7 @@ TEST_F(ServerTest, ServerHandlesClientConnection) {
     const char* message = "Hello Server";
     send(sock, message, strlen(message), 0);
 
-    char buffer[1024];
+    char buffer[BUFFER_SIZE];
     int bytes_received = recv(sock, buffer, sizeof(buffer) - 1, 0);
     ASSERT_GT(bytes_received, 0);
 
@@ -87,7 +87,7 @@ TEST_F(ServerTest, HandlesMultipleClientConnections) {
         memset(&server_addr, 0, sizeof(server_addr));
         server_addr.sin_family = AF_INET;
         server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-        server_addr.sin_port = htons(8080);
+        server_addr.sin_port = htons(PORT);
 
         int result = connect(client_socks[i], (struct sockaddr*)&server_addr, sizeof(server_addr));
         ASSERT_NE(result, -1);
@@ -97,7 +97,7 @@ TEST_F(ServerTest, HandlesMultipleClientConnections) {
         const char* message = "Hello Server";
         send(client_socks[i], message, strlen(message), 0);
 
-        char buffer[1024];
+        char buffer[BUFFER_SIZE];
         int bytes_received = recv(client_socks[i], buffer, sizeof(buffer) - 1, 0);
         ASSERT_GT(bytes_received, 0);
 
@@ -107,4 +107,27 @@ TEST_F(ServerTest, HandlesMultipleClientConnections) {
 
         close(client_socks[i]);
     }
+}
+
+TEST_F(ServerTest, HandlesInvalidClientConnections) {
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    ASSERT_NE(sock, -1);
+
+    sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_addr.sin_port = htons(PORT);
+
+    int result = connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr));
+    ASSERT_NE(result, -1);
+
+    const char* message = "";
+    send(sock, message, strlen(message), 0);
+
+    char buffer[BUFFER_SIZE];
+    int bytes_received = recv(sock, buffer, sizeof(buffer) - 1, 0);
+    ASSERT_EQ(bytes_received, 0);
+
+    close(sock);
 }
