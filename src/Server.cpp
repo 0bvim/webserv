@@ -150,6 +150,7 @@ void Server::_initServer()
  **/
 void  Server::run()
 {
+  /* esse eh o loop geral para o servidor ficar esperando por eventos */
   while (true)
   {
     /* essa funcao espera por eventos de fds registrados na instancia epoll determinada
@@ -161,10 +162,19 @@ void  Server::run()
       throw std::runtime_error("Failed to wait on epoll");
     }
 
+    /* esse loop eh para processamento do eventos detectados */
     for (size_t i = 0; i < event_count; i++)
     {
+      /* aqui ele ficar verificando se o evento pertence ao fd do server
+       * ou do cliente ja conectado.
+       * Se for do servidor, ele tentara aceitar novas conexoes em um loop
+       * e para cada nova conexao ele configura o fd do cliente para o modo
+       * nao bloqueante e registra o descritor na epoll para futuras operacoes
+       * de leitura.
+       **/
       if (_events[i].data.fd == _server_fd)
       {
+        /* configurando o fd do cliente e aceitando a conexao */
         while (true)
         {
           sockaddr_in client_addr;
@@ -192,16 +202,18 @@ void  Server::run()
           }
         }
       } else {
-        handleConnection(_events[i].data.fd);
+        handleConnection(_events[i].data.fd); // Se o evento nao for do servidor
+        // e sim um cliente ja conectado, essa funcao eh chamada para processar os dados recebidos
+        // desse cliente
       }
     }
   }
 }
 
-// void Server::handleConnection(int client_fd)
-// {
+void Server::handleConnection(int client_fd)
+{
 
-// }
+}
 
 void Server::setNonBlocking(int fd)
 {
