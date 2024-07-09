@@ -13,7 +13,9 @@
 #include "../include/Server.hpp"
 #include <arpa/inet.h>
 #include <cstring>
+#include <fcntl.h>
 #include <netinet/in.h>
+#include <stdexcept>
 #include <sys/socket.h>
 
 // PUBLIC FUNCTIONS
@@ -104,7 +106,26 @@ void Server::_initServer()
 
 }
 
+void Server::setNonBlocking(int fd)
+{
+  /* essa funcao eh usada para manipular as flags dos files descriptors.
+   * nessa parte do codigo estamos usando para pegar as atuais flags do
+   * fd passado no primero parametro.
+   **/
+  int flags = fcntl(fd, F_GETFL, 0);
+  if (flags == -1)
+  {
+    throw std::runtime_error("Failed to get file descriptor flags");
+  }
+
+  /* essa parte eh para adicionar a flag non-blocking ao set de flags existente do fd. */
+  if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+  {
+    throw std::runtime_error("Failed to set non-blocking mode");
+  }
+
 }
+
 // PRIVATE FUNCTIONS
 
 void	Server::_createServerSocket(void) {
