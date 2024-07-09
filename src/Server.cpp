@@ -224,19 +224,19 @@ void Server::handleConnection(int client_fd)
         break ; // no more data to read
       else
       {
-        std::cerr << "Read error" << std::endl;
         close(client_fd);
         break ;
       }
     }
     else if (bytes_read == 0)
     {
+      std::cerr << "Read error" << std::endl;
       close(client_fd);
       break ; // client closed connection
     }
     else {
       buffer[bytes_read] = '\0';
-      std::cout << "Received: " << buffer << std::endl;
+      std::cout << "From client: " << client_fd << " | Received: " << buffer;
 
       const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
       ssize_t bytes_written = write(client_fd, response, strlen(response));
@@ -244,7 +244,8 @@ void Server::handleConnection(int client_fd)
       {
         std::cerr << "Write error" << std::endl;
       }
-      close(client_fd);
+      // close(client_fd); // descomentar para ter apenas uma 'requisicao e fechar a conexao
+      // acho que isso nao vai precisar, provavelmente vamos precisar lidar com sinais.
     }
   }
 }
