@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <stdexcept>
+#include <sys/epoll.h>
 #include <sys/socket.h>
 
 // PUBLIC FUNCTIONS
@@ -42,7 +43,6 @@ Server::~Server()
 
 void Server::_initServer()
 {
-
   /*   criando o socket/fd e verificando se ele continua -1 (se continuar, erro) */
 	this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_server_fd == -1) {
@@ -104,6 +104,47 @@ void Server::_initServer()
     throw std::runtime_error("Failed to listen socket");
   }
 
+  /* maiores explicacoes dentro da funcao principal
+   * mas a funcao apenas captura e altera as flags do fd recebido
+   * como parametro
+   **/
+  setNonBlocking(this->_server_fd);
+
+  /* epoll_create1 eh mais simples que a epoll_create, ela recebe apenas a flags como parametro.
+   * ela eh usada para iniciar a interface de fds, que eh um mecanismo para monitorar multiplos fds
+   * epoll_create recebe o tamanho (quantidade de fds) que ira monitorar, porem a '1' nao precisa
+   * porque ela adiciona dinamicamente.
+   **/
+  this->_epoll_fd = epoll_create1(0);
+  if (this->_epoll_fd == -1)
+  {
+    throw std::runtime_error("Failed to create epoll file descriptor");
+  }
+
+  /* essa parte do codigo configura um evento 'epoll'  para monitorar um socket '_server_fd'
+   * em busca de novas conexoes. Ele utiliza um mecanismo de notificacao de entrada e saida
+   * escalavel
+   * primeiro criamos a variavel que vai monitorar.
+   **/
+  epoll_event event;
+
+  /* configurando o evento
+   * EPOLLIN - Indica que o evento pode ser adicionado quando houver dados disponiveis
+   * para leitura no fd. Normalmente significa que um novo pedido de conexao chegou.
+   * EPOLLET - Esse eh acionado uma vez por serie de eventos.
+   **/
+  event.events = EPOLLIN | EPOLLET;
+
+  /* associando o fd/socket que sera monitorado */
+  event.data.fd = this->_server_fd;
+
+  /* epoll_ctl eh chamada para adicionar, modificar ou deletar eventos na instancia epoll
+   * atrelada ao _server_fd
+   **/
+  if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, _server_fd, &event) == -1)
+  {
+    throw std::runtime_error("Failed to add server socket to epoll");
+  }
 }
 
 void Server::setNonBlocking(int fd)
@@ -123,66 +164,4 @@ void Server::setNonBlocking(int fd)
   {
     throw std::runtime_error("Failed to set non-blocking mode");
   }
-
-}
-
-// PRIVATE FUNCTIONS
-
-void	Server::_createServerSocket(void) {
-
-void	Server::_bindServer(void) {
-	if (bind(this->_serverSocket, (struct sockaddr *)&this->_address,
-			sizeof(this->_address)) == -1) {
-	throw std::runtime_error("Error binding the server");
-	}
-}
-
-void	Server::_listen(void) {
-	if (listen(this->_serverSocket, MAX_CONNECTIONS) == -1) {
-		throw std::runtime_error("Error listening the server");
-	}
-}
-
-void	Server::_acceptClient(void) {
-	Client *client = new Client();
-
-	client->connectToServer(this->_serverSocket);
-	this->_clients.push_back(client);
-}
-
-void	Server::_polling(void) {
-  struct epoll_event ev, events[MAX_EVENTS];
-	int conn_sock, nfds, epollfd;
-
-	epollfd = epoll_create1(0);
-	if (epollfd == -1) {
-		throw std::runtime_error("Error polling");
-	}
-	ev.events = EPOLLIN;
-	ev.data.fd = this->_serverSocket;
-	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, this->_serverSocket, &ev) == -1) {
-		throw std::runtime_error("Error polling the server socket");
-	}
-	for (;;) {
-		nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1);
-		if (nfds == -1) {
-			throw std::runtime_error("Error polling events");
-		}
-		for (int n = 0; n < nfds; ++n) {
-			if (events[n].data.fd == this->_serverSocket) {
-				this->_acceptClient();
-				conn_sock = this->_clients.back()->getClientSocket();
-			}
-			ev.events = EPOLLIN | EPOLLET;
-			ev.data.fd = conn_sock;
-			if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
-				throw std::runtime_error("Error adding client to server poll");
-			}
-			else {
-				//RESOLVER OS EVENTOS DO NOSSO SERVER
-				std::cout << "teste" << std::endl;
-				//do_use_fd(events[n].data.fd);
-			}
-		}
-	}
 }
