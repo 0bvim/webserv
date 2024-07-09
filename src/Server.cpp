@@ -55,7 +55,7 @@ void Server::_initServer()
    * (normalmente tem um tempo para isso ocorrer)
    **/
   int opt = 1; // argumento para ser usado com o novo valor para setar.
-  if (setsockopt(_server_fd, SOL_SOCKET, &opt, sizeof(opt)) == -1)
+  if (setsockopt(_server_fd, SOL_SOCKET, opt, NULL, sizeof(opt)) == -1)
   {
     throw std::runtime_error("Failed to set socket options");
   }

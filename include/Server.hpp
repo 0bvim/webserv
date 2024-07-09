@@ -24,7 +24,7 @@ public:
   void run();
 
 private:
-/* Server initialization */
+  /* Server initialization */
   void _initServer();
   void handleConnection(int client_fd);
   void handleEvents();
