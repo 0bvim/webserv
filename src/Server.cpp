@@ -12,12 +12,14 @@
 
 #include "../include/Server.hpp"
 #include <arpa/inet.h>
+#include <cerrno>
 #include <cstring>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <stdexcept>
 #include <sys/epoll.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 
 Server::Server(const std::string &address, int port) : _address(address),
   _port(port), _server_fd(-1), _epoll_fd(-1)
@@ -212,8 +214,41 @@ void  Server::run()
 
 void Server::handleConnection(int client_fd)
 {
+  char buffer[1024];
+  while (true)
+  {
+    ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer) - 1);
+    if (bytes_read == -1)
+    {
+      if (errno == EAGAIN || errno == EWOULDBLOCK)
+        break ; // no more data to read
+      else
+      {
+        std::cerr << "Read error" << std::endl;
+        close(client_fd);
+        break ;
+      }
+    }
+    else if (bytes_read == 0)
+    {
+      close(client_fd);
+      break ; // client closed connection
+    }
+    else {
+      buffer[bytes_read] = '\0';
+      std::cout << "Received: " << buffer << std::endl;
 
+      const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
+      ssize_t bytes_written = write(client_fd, response, strlen(response));
+      if (bytes_written == -1)
+      {
+        std::cerr << "Write error" << std::endl;
+      }
+      close(client_fd);
+    }
+  }
 }
+
 
 void Server::setNonBlocking(int fd)
 {
