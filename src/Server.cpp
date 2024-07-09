@@ -165,7 +165,7 @@ void  Server::run()
     }
 
     /* esse loop eh para processamento do eventos detectados */
-    for (size_t i = 0; i < event_count; i++)
+    for (int i = 0; i < event_count; i++)
     {
       /* aqui ele ficar verificando se o evento pertence ao fd do server
        * ou do cliente ja conectado.
