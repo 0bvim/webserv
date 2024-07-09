@@ -11,15 +11,6 @@
 /* ************************************************************************** */
 
 #include "../include/Server.hpp"
-#include <arpa/inet.h>
-#include <cerrno>
-#include <cstring>
-#include <fcntl.h>
-#include <netinet/in.h>
-#include <stdexcept>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 Server::Server(const std::string &address, int port) : _address(address),
   _port(port), _server_fd(-1), _epoll_fd(-1)
@@ -39,8 +30,8 @@ Server::~Server()
   {
     close(_epoll_fd);
   }
-}
 
+}
 void Server::_initServer()
 {
   /*   criando o socket/fd e verificando se ele continua -1 (se continuar, erro) */
@@ -249,7 +240,6 @@ void Server::handleConnection(int client_fd)
     }
   }
 }
-
 
 void Server::setNonBlocking(int fd)
 {

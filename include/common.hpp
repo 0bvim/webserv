@@ -19,6 +19,8 @@
 # define MAX_EVENTS 10
 
 // C libs
+# include <netinet/in.h>
+# include <sys/types.h>
 # include <arpa/inet.h>
 # include <asm-generic/socket.h>
 # include <sys/socket.h>
@@ -30,6 +32,7 @@
 # include <unistd.h>
 
 // C++ LIBS
+# include <cerrno>
 # include <cstring>
 # include <csignal>
 # include <iostream>
