@@ -26,7 +26,7 @@ public:
 private:
 /* Server initialization */
   void _initServer();
-  void handleConnection();
+  void handleConnection(int client_fd);
   void handleEvents();
   void setNonBlocking(int fd);
 

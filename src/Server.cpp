@@ -19,8 +19,6 @@
 #include <sys/epoll.h>
 #include <sys/socket.h>
 
-// PUBLIC FUNCTIONS
-
 Server::Server(const std::string &address, int port) : _address(address),
   _port(port), _server_fd(-1), _epoll_fd(-1)
 {
@@ -146,6 +144,64 @@ void Server::_initServer()
     throw std::runtime_error("Failed to add server socket to epoll");
   }
 }
+
+/* essa funcao 'run' foi feita para esperar eventos de varios clients (fds) de maneira eficiente
+ * ela monitora a instancia do epoll_fd permitindo que o sevidor esperar atividade de varios fds
+ **/
+void  Server::run()
+{
+  while (true)
+  {
+    /* essa funcao espera por eventos de fds registrados na instancia epoll determinada
+     * na _epoll_fd
+     **/
+    int event_count = epoll_wait(_epoll_fd, _events, MAX_EVENTS, -1);
+    if (event_count == -1)
+    {
+      throw std::runtime_error("Failed to wait on epoll");
+    }
+
+    for (size_t i = 0; i < event_count; i++)
+    {
+      if (_events[i].data.fd == _server_fd)
+      {
+        while (true)
+        {
+          sockaddr_in client_addr;
+          socklen_t client_addr_len = sizeof(client_addr);
+          int client_fd = accept(_server_fd, (sockaddr*)&client_addr, client_addr_len);
+          if (client_fd == -1)
+          {
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+              break;
+            else
+            {
+              std::cerr << "Failed to accept client connection" << std::endl;
+              break;
+            }
+          }
+          setNonBlocking(client_fd);
+
+          epoll_event event;
+          event.events = EPOLLIN | EPOLLET;
+          event.data.fd = client_fd;
+          if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
+          {
+            std::cerr << "Failed to add client socket to epoll" << std::endl;
+            close(client_fd);
+          }
+        }
+      } else {
+        handleConnection(_events[i].data.fd);
+      }
+    }
+  }
+}
+
+// void Server::handleConnection(int client_fd)
+// {
+
+// }
 
 void Server::setNonBlocking(int fd)
 {
