@@ -55,7 +55,7 @@ void Server::_initServer()
    * (normalmente tem um tempo para isso ocorrer)
    **/
   int opt = 1; // argumento para ser usado com o novo valor para setar.
-  if (setsockopt(_server_fd, SOL_SOCKET, opt, NULL, sizeof(opt)) == -1)
+  if (setsockopt(_server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
   {
     throw std::runtime_error("Failed to set socket options");
   }
@@ -181,7 +181,7 @@ void  Server::run()
         {
           sockaddr_in client_addr;
           socklen_t client_addr_len = sizeof(client_addr);
-          int client_fd = accept(_server_fd, (sockaddr*)&client_addr, client_addr_len);
+          int client_fd = accept(_server_fd, (sockaddr*)&client_addr, &client_addr_len);
           if (client_fd == -1)
           {
             if (errno == EAGAIN || errno == EWOULDBLOCK)
