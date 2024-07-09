@@ -28,6 +28,7 @@ private:
   void _initServer();
   void handleConnection();
   void handleEvents();
+  void setNonBlocking(int fd);
 
   std::string _address;
   int _port;
