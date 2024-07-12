@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/02 11:52:58 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/11 19:12:55 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void Server::_initServer()
 
   /* sin_famlily = Address Family Internet - sever para especificar que esta usando IPV4 */
   server_addr.sin_family = AF_INET;
-  
+
   /* a funcao inet_addr recebe uma representacao de uma string(char *) com um endereco IPv4 e retorna
    * a representacao binaria do ip para operacoes de rede.
    * e essa linha so esta setando o endereco de ip para o ip passado via string para a inet_addr
@@ -228,6 +228,9 @@ void Server::handleConnection(int client_fd)
     else {
       buffer[bytes_read] = '\0';
       // std::cout << "From client: " << client_fd << " | Received: " << buffer;
+
+      Parser parser(buffer);
+      t_request request = parser.getRequest();
 
       const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
       ssize_t bytes_written = write(client_fd, response, strlen(response));

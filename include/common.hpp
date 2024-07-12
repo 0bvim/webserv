@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/03 12:48:13 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/11 18:40:00 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 # include <cstring>
 # include <csignal>
 # include <iostream>
+# include <sstream>
 # include <stdexcept>
 # include <string>
 # include <vector>
