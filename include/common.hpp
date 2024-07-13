@@ -71,4 +71,7 @@
 # define BG_WHITE(text) "\033[47m" << text << "\033[0m"
 # define BG_BLACK(text) "\033[40m" << text << "\033[0m"
 
+// functions
+std::string itoa(int value);
+
 #endif

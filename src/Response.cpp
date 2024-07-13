@@ -40,15 +40,6 @@ void	Response::_generateHeaders()
 	this->_response.headers["Content-Type"] = "text/html";
 }
 
-std::string itoa(int value)
-{
-	std::string str;
-	std::stringstream ss;
-	ss << value;
-	ss >> str;
-	return str;
-}
-
 void	Response::_generateBody()
 {
 	std::ifstream file("./web/index.html");
