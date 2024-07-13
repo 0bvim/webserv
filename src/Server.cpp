@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/11 19:12:55 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/13 15:31:38 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,11 +229,13 @@ void Server::handleConnection(int client_fd)
       buffer[bytes_read] = '\0';
       // std::cout << "From client: " << client_fd << " | Received: " << buffer;
 
-      Parser parser(buffer);
-      t_request request = parser.getRequest();
+      Request request(buffer);
+      Response response(request);
+      std::string responseStr = response.getResponse();
+      const char *respStr = responseStr.c_str();
 
-      const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
-      ssize_t bytes_written = write(client_fd, response, strlen(response));
+      // const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
+      ssize_t bytes_written = write(client_fd, respStr, strlen(respStr));
       if (bytes_written == -1)
       {
         std::cerr << "Write error" << std::endl;

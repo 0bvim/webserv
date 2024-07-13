@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/11 18:40:00 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/13 15:19:10 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@
 # include <cerrno>
 # include <cstring>
 # include <csignal>
+# include <cstdlib>
+# include <fstream>
 # include <iostream>
 # include <sstream>
 # include <stdexcept>

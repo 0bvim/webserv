@@ -1,42 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   Request.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/13 14:14:47 by bmoretti         ###   ########.fr       */
+/*   Created: 2024/07/11 18:24:18 by bmoretti          #+#    #+#             */
+/*   Updated: 2024/07/11 18:58:26 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-# define SERVER_HPP
+#ifndef REQUEST_HPP
+# define REQUEST_HPP
 
 # include "common.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
 
-class Server
+typedef struct s_request
+{
+	std::string							method;
+	std::string							uri;
+	std::map<std::string, std::string>	headers;
+} t_request;
+
+class Request
 {
 public:
-	Server(const std::string &address, int port);
-	~Server();
+	Request(const char * str);
+	~Request();
 
-  void run();
+	t_request	getRequest() const;
 
 private:
-  /* Server initialization */
-  void _initServer();
-  void handleConnection(int client_fd);
-  void handleEvents();
-  void setNonBlocking(int fd);
+	const char *	_str;
+	t_request		_request;
 
-  std::string _address;
-  int _port;
-  int _server_fd;
-  int _epoll_fd;
-  struct epoll_event _events[MAX_EVENTS];
+	std::string	_trim(const std::string & str);
+	void		_parseHTTPRequest();
+
 };
 
 #endif

@@ -1,41 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Parser.hpp                                         :+:      :+:    :+:   */
+/*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 18:24:18 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/11 18:58:26 by bmoretti         ###   ########.fr       */
+/*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
+/*   Updated: 2024/07/13 14:02:44 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSER_HPP
-# define PARSER_HPP
+#ifndef RESPONSE_HPP
+# define RESPONSE_HPP
 
 # include "common.hpp"
+# include "Request.hpp"
 
-typedef struct s_request
+typedef struct s_response
 {
-	std::string							method;
-	std::string							uri;
+	std::string							statusLine;
 	std::map<std::string, std::string>	headers;
-} t_request;
+	std::string							body;
+} t_response;
 
-class Parser
+class Response
 {
 public:
-	Parser(const char * str);
-	~Parser();
+	Response(Request & request);
+	~Response();
 
-	t_request	getRequest() const;
+	std::string	getResponse() const;
 
 private:
-	const char *	_str;
-	t_request		_request;
+	Request &	_request;
+	t_response	_response;
 
-	std::string	_trim(const std::string & str);
-	void		_parseHTTPRequest();
+	void		_generateStatusLine();
+	void		_generateHeaders();
+	void		_generateBody();
+	std::string	_generateResponse() const;
 
 };
 
