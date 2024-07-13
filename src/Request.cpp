@@ -1,33 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Parser.cpp                                         :+:      :+:    :+:   */
+/*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:29:18 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/11 19:00:26 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/13 13:29:09 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Parser.hpp"
+#include "Request.hpp"
 
-Parser::Parser(const char * str) : _str(str)
+Request::Request(const char * str) : _str(str)
 {
 	this->_parseHTTPRequest();
 }
 
-Parser::~Parser()
+Request::~Request()
 {
 
 }
 
-t_request	Parser::getRequest() const
+t_request	Request::getRequest() const
 {
 	return this->_request;
 }
 
-std::string	Parser::_trim(const std::string & str)
+std::string	Request::_trim(const std::string & str)
 {
 	std::string::size_type	first = str.find_first_not_of(' ');
 	std::string::size_type	last = str.find_last_not_of(' ');
@@ -38,7 +38,7 @@ std::string	Parser::_trim(const std::string & str)
 	return str.substr(first, last - first + 1);
 }
 
-void	Parser::_parseHTTPRequest()
+void	Request::_parseHTTPRequest()
 {
 	std::istringstream	requestStream(this->_str);
 	std::string			line;
