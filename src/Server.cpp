@@ -6,31 +6,138 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/13 15:31:38 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/16 15:02:35 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/Server.hpp"
 
 Server::Server(const std::string &address, int port) : _address(address),
-  _port(port), _server_fd(-1), _epoll_fd(-1)
+														_port(port),
+														_server_fd(-1),
+														_epoll_fd(-1)
 {
-  _initServer();
+	_initServer();
 }
 
 Server::~Server()
 {
-  /* verificar se o os fds sao diferentes de -1 para dar close */
-  if (_server_fd != -1)
-  {
-    close(_server_fd);
-  }
+	/* verificar se o os fds sao diferentes de -1 para dar close */
+	if (_server_fd != -1) {
+		close(_server_fd);
+	}
 
-  if (_epoll_fd != -1)
-  {
-    close(_epoll_fd);
-  }
+	if (_epoll_fd != -1) {
+		close(_epoll_fd);
+	}
+}
 
+/* essa funcao 'run' foi feita para esperar eventos de varios clients (fds) de maneira eficiente
+ * ela monitora a instancia do epoll_fd permitindo que o sevidor esperar atividade de varios fds
+ **/
+void  Server::run()
+{
+  /* esse eh o loop geral para o servidor ficar esperando por eventos */
+  while (true)
+  {
+    /* essa funcao espera por eventos de fds registrados na instancia epoll determinada
+     * na _epoll_fd
+     **/
+    int event_count = epoll_wait(_epoll_fd, _events, MAX_EVENTS, -1);
+    if (event_count == -1)
+    {
+      throw std::runtime_error("Failed to wait on epoll");
+    }
+
+    /* esse loop eh para processamento do eventos detectados */
+    for (int i = 0; i < event_count; i++)
+    {
+      /* aqui ele ficar verificando se o evento pertence ao fd do server
+       * ou do cliente ja conectado.
+       * Se for do servidor, ele tentara aceitar novas conexoes em um loop
+       * e para cada nova conexao ele configura o fd do cliente para o modo
+       * nao bloqueante e registra o descritor na epoll para futuras operacoes
+       * de leitura.
+       **/
+      if (_events[i].data.fd == _server_fd)
+      {
+        /* configurando o fd do cliente e aceitando a conexao */
+        while (true)
+        {
+          sockaddr_in client_addr;
+          socklen_t client_addr_len = sizeof(client_addr);
+          int client_fd = accept(_server_fd, (sockaddr*)&client_addr, &client_addr_len);
+          if (client_fd == -1)
+          {
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+              break;
+            else
+            {
+              std::cerr << "Failed to accept client connection" << std::endl;
+              break;
+            }
+          }
+          this->_setNonBlocking(client_fd);
+
+          epoll_event event;
+          event.events = EPOLLIN | EPOLLET;
+          event.data.fd = client_fd;
+          if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
+          {
+            std::cerr << "Failed to add client socket to epoll" << std::endl;
+            close(client_fd);
+          }
+        }
+      } else {
+        this->_handleConnection(_events[i].data.fd); // Se o evento nao for do servidor
+        // e sim um cliente ja conectado, essa funcao eh chamada para processar os dados recebidos
+        // desse cliente
+      }
+    }
+  }
+}
+
+void Server::_handleConnection(int client_fd)
+{
+  char buffer[BUFFER_SIZE];
+  while (true)
+  {
+    ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer) - 1);
+    if (bytes_read == -1)
+    {
+      if (errno == EAGAIN || errno == EWOULDBLOCK)
+        break ; // no more data to read
+      else
+      {
+        std::cerr << "Read error" << std::endl;
+        close(client_fd);
+        break ;
+      }
+    }
+    else if (bytes_read == 0)
+    {
+      close(client_fd);
+      break ; // client closed connection
+    }
+    else {
+      buffer[bytes_read] = '\0';
+      // std::cout << "From client: " << client_fd << " | Received: " << buffer;
+
+      Request request(buffer);
+      Response response(request);
+      std::string responseStr = response.getResponse();
+      const char *respStr = responseStr.c_str();
+
+      // const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
+      ssize_t bytes_written = write(client_fd, respStr, strlen(respStr));
+      if (bytes_written == -1)
+      {
+        std::cerr << "Write error" << std::endl;
+      }
+      // close(client_fd); // descomentar para ter apenas uma 'requisicao e fechar a conexao
+      // acho que isso nao vai precisar, provavelmente vamos precisar lidar com sinais.
+    }
+  }
 }
 void Server::_initServer()
 {
@@ -99,7 +206,7 @@ void Server::_initServer()
    * mas a funcao apenas captura e altera as flags do fd recebido
    * como parametro
    **/
-  setNonBlocking(this->_server_fd);
+  this->_setNonBlocking(this->_server_fd);
 
   /* epoll_create1 eh mais simples que a epoll_create, ela recebe apenas a flags como parametro.
    * ela eh usada para iniciar a interface de fds, que eh um mecanismo para monitorar multiplos fds
@@ -138,115 +245,8 @@ void Server::_initServer()
   }
 }
 
-/* essa funcao 'run' foi feita para esperar eventos de varios clients (fds) de maneira eficiente
- * ela monitora a instancia do epoll_fd permitindo que o sevidor esperar atividade de varios fds
- **/
-void  Server::run()
-{
-  /* esse eh o loop geral para o servidor ficar esperando por eventos */
-  while (true)
-  {
-    /* essa funcao espera por eventos de fds registrados na instancia epoll determinada
-     * na _epoll_fd
-     **/
-    int event_count = epoll_wait(_epoll_fd, _events, MAX_EVENTS, -1);
-    if (event_count == -1)
-    {
-      throw std::runtime_error("Failed to wait on epoll");
-    }
 
-    /* esse loop eh para processamento do eventos detectados */
-    for (int i = 0; i < event_count; i++)
-    {
-      /* aqui ele ficar verificando se o evento pertence ao fd do server
-       * ou do cliente ja conectado.
-       * Se for do servidor, ele tentara aceitar novas conexoes em um loop
-       * e para cada nova conexao ele configura o fd do cliente para o modo
-       * nao bloqueante e registra o descritor na epoll para futuras operacoes
-       * de leitura.
-       **/
-      if (_events[i].data.fd == _server_fd)
-      {
-        /* configurando o fd do cliente e aceitando a conexao */
-        while (true)
-        {
-          sockaddr_in client_addr;
-          socklen_t client_addr_len = sizeof(client_addr);
-          int client_fd = accept(_server_fd, (sockaddr*)&client_addr, &client_addr_len);
-          if (client_fd == -1)
-          {
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
-              break;
-            else
-            {
-              std::cerr << "Failed to accept client connection" << std::endl;
-              break;
-            }
-          }
-          setNonBlocking(client_fd);
-
-          epoll_event event;
-          event.events = EPOLLIN | EPOLLET;
-          event.data.fd = client_fd;
-          if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
-          {
-            std::cerr << "Failed to add client socket to epoll" << std::endl;
-            close(client_fd);
-          }
-        }
-      } else {
-        handleConnection(_events[i].data.fd); // Se o evento nao for do servidor
-        // e sim um cliente ja conectado, essa funcao eh chamada para processar os dados recebidos
-        // desse cliente
-      }
-    }
-  }
-}
-
-void Server::handleConnection(int client_fd)
-{
-  char buffer[BUFFER_SIZE];
-  while (true)
-  {
-    ssize_t bytes_read = read(client_fd, buffer, sizeof(buffer) - 1);
-    if (bytes_read == -1)
-    {
-      if (errno == EAGAIN || errno == EWOULDBLOCK)
-        break ; // no more data to read
-      else
-      {
-        std::cerr << "Read error" << std::endl;
-        close(client_fd);
-        break ;
-      }
-    }
-    else if (bytes_read == 0)
-    {
-      close(client_fd);
-      break ; // client closed connection
-    }
-    else {
-      buffer[bytes_read] = '\0';
-      // std::cout << "From client: " << client_fd << " | Received: " << buffer;
-
-      Request request(buffer);
-      Response response(request);
-      std::string responseStr = response.getResponse();
-      const char *respStr = responseStr.c_str();
-
-      // const char *response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
-      ssize_t bytes_written = write(client_fd, respStr, strlen(respStr));
-      if (bytes_written == -1)
-      {
-        std::cerr << "Write error" << std::endl;
-      }
-      // close(client_fd); // descomentar para ter apenas uma 'requisicao e fechar a conexao
-      // acho que isso nao vai precisar, provavelmente vamos precisar lidar com sinais.
-    }
-  }
-}
-
-void Server::setNonBlocking(int fd)
+void Server::_setNonBlocking(int fd)
 {
   /* essa funcao eh usada para manipular as flags dos files descriptors.
    * nessa parte do codigo estamos usando para pegar as atuais flags do
