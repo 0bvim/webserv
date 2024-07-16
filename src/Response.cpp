@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:07:40 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/13 15:41:19 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/16 15:06:32 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 Response::Response(Request & request) : _request(request)
 {
+	// o request será usado para gerar o response. está (void) para compilar
+	(void)this->_request;
 	this->_generateStatusLine();
 	this->_generateHeaders();
 	this->_generateBody();
