@@ -1,16 +1,16 @@
-# include "Server.hpp"
-# include <csignal>
+# include "../include/Server.hpp"
 
 int	main(void)
 {
-	signal(SIGPIPE, SIG_IGN);
-	signal(SIGINT, Server::_handleSignal);
+	Config config("arquivo.conf");
+	config.printServers();
 
-	try {
-		Server serv;
-	}
-	catch (std::exception &e){
-		std::cerr << e.what() << std::endl;
-	}
-	return 0;
+
+	// try {
+	// 	Server server("127.0.0.1", PORT);
+    // server.run();
+	// }	catch (std::exception &e)	{
+	// 	std::cerr << RED("Error: ") << e.what() << std::endl;
+	// }
+	// return 0;
 }

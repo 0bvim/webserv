@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   common.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/06 17:15:43 by lumedeir         ###   ########.fr       */
+/*   Updated: 2024/07/13 15:19:10 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,26 @@
 # define MAX_EVENTS 10
 
 // C libs
+# include <netinet/in.h>
+# include <sys/types.h>
 # include <arpa/inet.h>
+# include <asm-generic/socket.h>
+# include <sys/socket.h>
 # include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <sys/epoll.h>
 # include <unistd.h>
-# include <fstream>
-# include <stdexcept>
-# include <sstream>
-# include <csignal>
 
 // C++ LIBS
+# include <cerrno>
 # include <cstring>
+# include <csignal>
+# include <cstdlib>
+# include <fstream>
 # include <iostream>
-# include <iomanip>
+# include <sstream>
 # include <stdexcept>
 # include <string>
 # include <vector>
@@ -66,5 +70,8 @@
 # define BG_BROWN(text) "\033[43m" << text << "\033[0m"
 # define BG_WHITE(text) "\033[47m" << text << "\033[0m"
 # define BG_BLACK(text) "\033[40m" << text << "\033[0m"
+
+// functions
+std::string itoa(int value);
 
 #endif
