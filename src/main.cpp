@@ -5,7 +5,6 @@ int	main(void)
 	Config config("arquivo.conf");
 	config.printServers();
 
-
 	// try {
 	// 	Server server("127.0.0.1", PORT);
     // server.run();
