@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
 /*   Updated: 2024/07/16 15:02:35 by bmoretti         ###   ########.fr       */
