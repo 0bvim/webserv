@@ -1,6 +1,7 @@
 # include "../include/Server.hpp"
 
-int	main(void)
+// a main tem que receber argv para conseguirmos verificar o arquivo.
+int	main(int ac, char **av)
 {
 	Config config("arquivo.conf");
 	config.printServers();
