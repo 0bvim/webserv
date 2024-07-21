@@ -1,7 +1,8 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "common.hpp"
+# include "common.hpp"
+# define DEFAULT_CONFIG_FILE "default.conf"
 
 struct LocationConfig {
     std::string path;
