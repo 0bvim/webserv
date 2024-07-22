@@ -12,17 +12,19 @@ int main(int ac, char **av)
 	else
 		file = DEFAULT_CONFIG_FILE;
 
-	Config config(file);
-	config.printServers();
-	// try
-	// {
-	// 	Server server("127.0.0.1", PORT);
-	// 	server.run();
-	// }
-	// catch (std::exception &e)
-	// {
-	// 	std::cerr << RED("Error: ") << e.what() << std::endl;
-	// }
+	try
+	{
+		Config config(file);
+		// Server server(config.getServerAddress(), config.getServerPort());
+		// OUTNL("address: " << config.getServerAddress());
+		// OUTNL("PORT: " << config.getServerPort());
+		Server server(config.getServerAddress(), config.getServerPort());
+		server.run();
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << RED("Error: ") << e.what() << std::endl;
+	}
 
 	return 0;
 }
