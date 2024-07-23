@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:29:18 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/13 13:29:09 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/22 22:19:24 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,29 @@ std::string	Request::_trim(const std::string & str)
 	return str.substr(first, last - first + 1);
 }
 
+void	Request::_getMethod(const std::string & str)
+{
+	if (str == "GET") {
+		this->_request.method = GET;
+	} else if (str == "POST") {
+		this->_request.method = POST;
+	} else if (str == "DELETE") {
+		this->_request.method = DELETE;
+	} else {
+		this->_request.method = OTHER;
+	}
+}
+
 void	Request::_parseHTTPRequest()
 {
 	std::istringstream	requestStream(this->_str);
 	std::string			line;
+	std::string			requestMethod;
 
 	std::getline(requestStream, line);
 	std::istringstream	requestLineStream(line);
-	requestLineStream >> this->_request.method;
+	requestLineStream >> requestMethod;
+	this->_getMethod(requestMethod);
 	requestLineStream >> this->_request.uri;
 
 	while (std::getline(requestStream, line) && line != "\r") {
