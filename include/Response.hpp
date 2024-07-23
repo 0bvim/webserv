@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/13 14:02:44 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/22 22:27:39 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,25 @@
 
 # include "common.hpp"
 # include "Request.hpp"
+
+namespace HttpStatus {
+	enum Code {
+		OK = 200,
+		CREATED = 201,
+		NO_CONTENT = 204,
+		MOVED_PERMANENTLY = 301,
+		BAD_REQUEST = 400,
+		FORBIDDEN = 403,
+		NOT_FOUND = 404,
+		NOT_ALLOWED = 405,
+		TIMEOUT = 408,
+		CONFLICT = 409,
+		PAYLOAD_TOO_LARGE = 413,
+		SERVER_ERR = 500,
+		NOT_IMPLEMENTED = 501,
+		SERVICE_UNAVAILABLE = 503,
+	};
+};
 
 typedef struct s_response
 {

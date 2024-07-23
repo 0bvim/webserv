@@ -15,9 +15,16 @@
 
 # include "common.hpp"
 
+enum RequestMethod {
+	GET,
+	POST,
+	DELETE,
+	OTHER
+};
+
 typedef struct s_request
 {
-	std::string							method;
+	RequestMethod						method;
 	std::string							uri;
 	std::map<std::string, std::string>	headers;
 } t_request;
@@ -35,6 +42,7 @@ private:
 	t_request		_request;
 
 	std::string	_trim(const std::string & str);
+	void		_getMethod(const std::string & str);
 	void		_parseHTTPRequest();
 
 };
