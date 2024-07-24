@@ -18,13 +18,20 @@ void Config::parseConfigFile()
 	std::vector<std::string> lines;
 	while (std::getline(configFile, line))
 		lines.push_back(line);
-	size_t index = 0;
-	while (index < lines.size())
+	try{
+		size_t index = 0;
+		checkBraces(lines);
+		while (index < lines.size())
+		{
+			std::string trimmedLine = trim(lines[index]);
+			if (trimmedLine == "server {")
+				parseServerBlock(lines, index);
+			++index;
+		}
+	}
+	catch (std::exception &e)
 	{
-		std::string trimmedLine = trim(lines[index]);
-		if (trimmedLine == "server {")
-			parseServerBlock(lines, index);
-		++index;
+		std::cerr << "Error parsing config file: " << e.what() << std::endl;
 	}
 }
 
@@ -37,16 +44,21 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 		std::string trimmedLine = trim(lines[index]);
 		if (trimmedLine == "}")
 			break;
+		if (!trimmedLine.empty() &&
+    			trimmedLine[trimmedLine.size() - 1] != ';' &&
+    			trimmedLine.find("location") == std::string::npos){
+			throw std::runtime_error("Invalid line in server block");
+		}
 		else if (trimmedLine.find("server_name") == 0)
-			server.server_name = trimmedLine.substr(12);
+			server.server_name = trimmedLine.substr(12).erase(trimmedLine.size() - 13);
 		else if (trimmedLine.find("listen") == 0)
 		{
-			std::istringstream iss(trimmedLine.substr(7));
+			std::istringstream iss(trimmedLine.substr(7).erase(trimmedLine.size() - 8));
 			iss >> server.listen;
 		}
 		else if (trimmedLine.find("client_max_body_size") == 0)
 		{
-			std::istringstream iss(trimmedLine.substr(21));
+			std::istringstream iss(trimmedLine.substr(21).erase(trimmedLine.size() - 22));
 			iss >> server.client_max_body_size;
 		}
 		else if (trimmedLine.find("error_page") == 0)
@@ -55,11 +67,19 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 			int errorCode;
 			std::istringstream iss(trimmedLine.substr(11, pos - 11));
 			iss >> errorCode;
-			std::string errorPage = trimmedLine.substr(pos + 1);
+			std::string errorPage = trimmedLine.substr(pos + 1).erase(trimmedLine.size() - pos - 2);
 			server.error_pages[errorCode] = errorPage;
 		}
 		else if (trimmedLine.find("location") == 0)
-			parseLocationBlock(lines, index, server);
+		{
+			try
+			{
+				parseLocationBlock(lines, index, server);
+			}
+			catch (std::exception &e){
+				throw std::runtime_error(e.what());
+			}
+		}
 	}
 
 	servers.push_back(server);
@@ -77,49 +97,64 @@ void Config::parseLocationBlock(const std::vector<std::string> &lines, size_t &i
 		std::string trimmedLine = trim(lines[index]);
 		if (trimmedLine == "}")
 			break;
+		if (!trimmedLine.empty() &&
+    			trimmedLine[trimmedLine.size() - 1] != ';'){
+			throw std::runtime_error("Invalid line in server block");
+		}
 		else if (trimmedLine.find("autoindex") == 0)
 			location.autoindex = (trimmedLine.substr(10) == "on");
 		else if (trimmedLine.find("root") == 0)
-			location.root = trimmedLine.substr(5);
+			location.root = trimmedLine.substr(5).erase(trimmedLine.size() - 6);
 		else if (trimmedLine.find("upload_dir") == 0)
-			location.upload_dir = trimmedLine.substr(11);
+			location.upload_dir = trimmedLine.substr(11).erase(trimmedLine.size() - 12);
 		else if (trimmedLine.find("index") == 0)
 		{
-			std::istringstream iss(trimmedLine.substr(6));
+			std::istringstream iss(trimmedLine.substr(6).erase(trimmedLine.size() - 7));
 			std::string idx;
 			while (iss >> idx)
 				location.index.push_back(idx);
 		}
 		else if (trimmedLine.find("allow_methods") == 0)
 		{
-			std::istringstream iss(trimmedLine.substr(14));
+			std::istringstream iss(trimmedLine.substr(14).erase(trimmedLine.size() - 15));
 			std::string method;
 			while (iss >> method)
 				location.allow_methods.push_back(method);
 		}
-		else if (trimmedLine.find("cgi_extension") == 0)
-			location.cgi_extension = trimmedLine.substr(14);
-		else if (trimmedLine.find("cgi_path") == 0)
-			location.cgi_path = trimmedLine.substr(9);
+		else if (trimmedLine.find("cgi ") == 0){
+			std::vector<std::string> tokens = split(trimmedLine, ' ');
+			if (tokens.size() != 3)
+				throw std::runtime_error("Invalid cgi line");
+			location.cgi_extension = tokens[1];
+			location.cgi_path = tokens[2];
+		}
 		else if (trimmedLine.find("redirect") == 0)
-			location.redirect = trimmedLine.substr(9);
+			location.redirect = trimmedLine.substr(9).erase(trimmedLine.size() - 10);
 	}
 
 	server.locations.push_back(location);
 }
 
-std::string Config::trim(const std::string &str)
-{
-	size_t first = 0;
-	size_t last = str.size() - 1;
+bool Config::checkBraces(const std::vector<std::string>& lines) {
+    int openBraces = 0;
 
-	while (first <= last && std::isspace(str[first]))
-		++first;
-	while (last >= first && std::isspace(str[last]))
-		--last;
-	if (first > last)
-		return "";
-	return str.substr(first, last - first + 1);
+    for (size_t i = 0; i < lines.size(); ++i) {
+        const std::string& line = lines[i];
+        for (size_t j = 0; j < line.size(); ++j) {
+            char c = line[j];
+            if (c == '{')
+                openBraces++;
+            else if (c == '}') {
+                if (openBraces == 0)
+                    throw std::runtime_error("Unmatched closing brace '}' found.");
+                openBraces--;
+            }
+        }
+    }
+    if (openBraces != 0)
+        throw std::runtime_error("Unmatched opening brace '{' found.");
+
+    return true;
 }
 
 void Config::printServers() const
@@ -152,13 +187,9 @@ void Config::printServers() const
 			for (size_t k = 0; k < location.allow_methods.size(); ++k)
 				std::cout << location.allow_methods[k] << " ";
 			std::cout << "\n";
-			if (!location.cgi_extension.empty())
-			{
-				std::cout << "  CGI Extension: " << location.cgi_extension << "\n";
-				std::cout << "  CGI Path: " << location.cgi_path << "\n";
-			}
-			if (!location.redirect.empty())
-				std::cout << "  Redirect: " << location.redirect << "\n";
+			std::cout << "  CGI Extension: " << location.cgi_extension << "\n";
+			std::cout << "  CGI Path: " << location.cgi_path << "\n";
+			std::cout << "  Redirect: " << location.redirect << "\n";
 		}
 		std::cout << "\n";
 	}
