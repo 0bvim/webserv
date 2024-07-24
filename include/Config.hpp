@@ -42,7 +42,7 @@ private:
 	void parseConfigFile();
 	void parseServerBlock(const std::vector<std::string> &lines, size_t &index);
 	void parseLocationBlock(const std::vector<std::string> &lines, size_t &index, ServerConfig &server);
-	std::string trim(const std::string &str);
+	bool checkBraces(const std::vector<std::string>& lines);
 };
 
 #endif
