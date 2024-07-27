@@ -6,20 +6,19 @@
 /*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/27 18:26:48 by lumedeir         ###   ########.fr       */
+/*   Updated: 2024/07/27 18:38:12 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/Server.hpp"
 
-Server::Server(const std::string &address, int port) : _address(address),
-													   _port(port),
-													   _server_fd(-1),
-													   _epoll_fd(-1)
+Server::Server(Config &config) : _config(config)
 {
-	std::cout << _port << std::endl;
-	std::cout << _address << std::endl;
-	_initServer();
+	this->_address = config.getServerAddress();
+	this->_port = config.getServerPort();
+	this->_server_fd = -1;
+	this->_epoll_fd = -1;
+	this->_initServer();
 }
 
 Server::~Server()
@@ -69,7 +68,7 @@ void Server::run()
 			}
 			else
 				this->_handleConnection(_events[i].data.fd); // Se o evento nao for do servidor
-		}
+		}e
 	}
 }
 
@@ -99,7 +98,7 @@ void Server::_handleConnection(int client_fd)
 		{
 			buffer[bytes_read] = '\0';
 			Request request(buffer);
-			Response response(request);
+			Response response(request, this->_config);
 			std::string responseStr = response.getResponse();
 			const char *respStr = responseStr.c_str();
 			ssize_t bytes_written = write(client_fd, respStr, strlen(respStr));

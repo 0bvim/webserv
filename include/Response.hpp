@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/22 22:27:39 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/27 16:25:39 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "common.hpp"
 # include "Request.hpp"
+# include "Config.hpp"
 
 namespace HttpStatus {
 	enum Code {
@@ -45,19 +46,21 @@ typedef struct s_response
 class Response
 {
 public:
-	Response(Request & request);
+	Response(Request & request, Config & config);
 	~Response();
 
 	std::string	getResponse() const;
 
 private:
 	Request &	_request;
+	Config &	_config;
 	t_response	_response;
 
 	void		_generateStatusLine();
 	void		_generateHeaders();
 	void		_generateBody();
 	std::string	_generateResponse() const;
+	bool		_identifyCGI();
 
 };
 

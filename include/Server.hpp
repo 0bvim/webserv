@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/16 14:54:14 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/27 17:00:57 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,12 @@
 # include "common.hpp"
 # include "Request.hpp"
 # include "Response.hpp"
+# include "Config.hpp"
 
 class Server
 {
 public:
-	Server(const std::string &address, int port);
+	Server(Config & config);
 	~Server();
 
 	void run();
@@ -37,6 +38,7 @@ private:
 	int _server_fd;
 	int _epoll_fd;
 	struct epoll_event _events[MAX_EVENTS];
+	Config & _config;
 };
 
 #endif
