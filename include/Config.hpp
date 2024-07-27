@@ -4,6 +4,12 @@
 #include "common.hpp"
 #define DEFAULT_CONFIG_FILE "default.conf"
 
+typedef struct cgi_config
+{
+	std::string extension;
+	std::string path;
+}	t_cgi_config;
+
 struct LocationConfig
 {
 	std::string path;
@@ -12,19 +18,18 @@ struct LocationConfig
 	std::string root;
 	std::string upload_dir;
 	std::vector<std::string> index;
-	std::string cgi_extension;
-	std::string cgi_path;
+	std::vector<t_cgi_config> cgi;
 	std::string redirect;
 };
 
-struct ServerConfig
+typedef struct ServerConfig
 {
 	std::string server_name;
 	std::string listen;
 	std::map<int, std::string> error_pages;
 	size_t client_max_body_size;
 	std::vector<LocationConfig> locations;
-};
+}	t_ServerConfig;
 
 class Config
 {

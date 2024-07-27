@@ -3,19 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:07:40 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/16 15:06:32 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/27 16:36:13 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 
-Response::Response(Request & request) : _request(request)
+Response::Response(Request & request, Config & config) : _request(request), _config(config)
 {
 	// o request será usado para gerar o response. está (void) para compilar
 	(void)this->_request;
+	this->_identifyCGI();
 	this->_generateStatusLine();
 	this->_generateHeaders();
 	this->_generateBody();
@@ -69,4 +70,28 @@ std::string	Response::_generateResponse() const
 	}
 	response += "\r\n" + this->_response.body;
 	return response;
+}
+
+bool	Response::_identifyCGI()
+{
+	t_request	request = this->_request.getRequest();
+	std::vector<ServerConfig> servers = this->_config.getServers();
+	
+	for (size_t i = 0; i < servers.size(); i++){
+		if (servers[i].server_name == request.headers["Host"]){
+			for (size_t j = 0; j < servers[i].locations.size(); j++){
+				if (request.uri.find(servers[i].locations[j].path) != std::string::npos){
+					for (size_t k = 0; k < servers[i].locations[j].cgi.size(); k++){
+						if (request.uri.find(servers[i].locations[j].cgi[k].extension) != std::string::npos){
+							std::cout << "CGI found" << std::endl;
+							return true;
+						}
+					}
+				}
+			}
+		}
+	
+	}
+	std::cout << "CGI not found" << std::endl;
+	return false;
 }
