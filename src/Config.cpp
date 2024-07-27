@@ -5,6 +5,8 @@ Config::Config(const std::string &filePath) : filePath(filePath)
 	parseConfigFile();
 }
 
+
+
 void Config::parseConfigFile()
 {
 	std::ifstream configFile(filePath.c_str());
@@ -39,6 +41,7 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 {
 	ServerConfig server;
 
+	// memset(&server, 0, sizeof(ServerConfig));
 	while (++index < lines.size())
 	{
 		std::string trimmedLine = trim(lines[index]);
@@ -53,6 +56,7 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 			server.server_name = trimmedLine.substr(12).erase(trimmedLine.size() - 13);
 		else if (trimmedLine.find("listen") == 0)
 		{
+			// server.listen = trimmedLine.substr(7).erase(trimmedLine.size() - 8);
 			std::istringstream iss(trimmedLine.substr(7).erase(trimmedLine.size() - 8));
 			iss >> server.listen;
 		}

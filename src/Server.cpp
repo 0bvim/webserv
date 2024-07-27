@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/22 00:47:50 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/27 18:26:48 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ Server::Server(const std::string &address, int port) : _address(address),
 													   _server_fd(-1),
 													   _epoll_fd(-1)
 {
+	std::cout << _port << std::endl;
+	std::cout << _address << std::endl;
 	_initServer();
 }
 
