@@ -6,7 +6,7 @@
 /*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/27 18:41:45 by lumedeir         ###   ########.fr       */
+/*   Updated: 2024/07/27 19:05:46 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void Server::run()
 			}
 			else
 				this->_handleConnection(_events[i].data.fd); // Se o evento nao for do servidor
-		}e
+		}
 	}
 }
 
@@ -98,6 +98,7 @@ void Server::_handleConnection(int client_fd)
 		{
 			buffer[bytes_read] = '\0';
 			Request request(buffer);
+			request.printRequest();
 			Response response(request, this->_config);
 			std::string responseStr = response.getResponse();
 			const char *respStr = responseStr.c_str();

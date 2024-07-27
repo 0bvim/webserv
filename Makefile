@@ -47,7 +47,7 @@ re: fclean all
 	@echo "Rebuilding..."
 
 run: all
-	@./$(NAME) $*
+	@./$(NAME) default.conf
 
 tests: $(TEST_TARGET)
 

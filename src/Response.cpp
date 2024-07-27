@@ -6,7 +6,7 @@
 /*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:07:40 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/27 16:36:13 by lumedeir         ###   ########.fr       */
+/*   Updated: 2024/07/27 19:06:28 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,16 @@ bool	Response::_identifyCGI()
 {
 	t_request	request = this->_request.getRequest();
 	std::vector<ServerConfig> servers = this->_config.getServers();
-	
+	OUTNL("PRINT 1");
 	for (size_t i = 0; i < servers.size(); i++){
+		OUTNL("PRINT 2: " << request.headers["Host"]);
 		if (servers[i].server_name == request.headers["Host"]){
+			OUTNL("PRINT 3");
 			for (size_t j = 0; j < servers[i].locations.size(); j++){
+				OUTNL("PRINT 4");
 				if (request.uri.find(servers[i].locations[j].path) != std::string::npos){
 					for (size_t k = 0; k < servers[i].locations[j].cgi.size(); k++){
+						OUTNL(servers[i].locations[j].cgi[k].extension);
 						if (request.uri.find(servers[i].locations[j].cgi[k].extension) != std::string::npos){
 							std::cout << "CGI found" << std::endl;
 							return true;
@@ -90,7 +94,6 @@ bool	Response::_identifyCGI()
 				}
 			}
 		}
-	
 	}
 	std::cout << "CGI not found" << std::endl;
 	return false;
