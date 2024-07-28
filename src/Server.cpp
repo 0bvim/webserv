@@ -6,7 +6,7 @@
 /*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 17:38:45 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/28 17:47:30 by vde-frei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Server::Server(Config &config) : _config(config)
 {
+	this->_status = HttpStatus::ZERO;
 	this->_address = config.getServerAddress();
 	this->_port = config.getServerPort();
 	this->_server_fd = -1;
@@ -97,13 +98,15 @@ void Server::_handleConnection(int client_fd)
 		}
 		else
 		{
+			// OUTNL("ENUM STATUS: " << this->_status);
 			buffer[bytes_read] = '\0';
 			_fillBuffer(client_fd, buffer);
 			if (this->_status == HttpStatus::BAD_REQUEST)
 			{
-				OUTNL("Bad Request");
+				// OUTNL("Bad Request");
 				this->_buffer_request.erase(client_fd);
 				close(client_fd);
+				this->_status = HttpStatus::ZERO;
 			}
 			else if (_checkEndMessage(client_fd))
 			{
