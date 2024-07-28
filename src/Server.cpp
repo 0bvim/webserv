@@ -6,7 +6,7 @@
 /*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 16:15:37 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/28 17:38:45 by vde-frei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,14 +99,23 @@ void Server::_handleConnection(int client_fd)
 		{
 			buffer[bytes_read] = '\0';
 			_fillBuffer(client_fd, buffer);
-			Request request(buffer);
-			request.printRequest();
-			Response response(request, this->_config);
-			std::string responseStr = response.getResponse();
-			const char *respStr = responseStr.c_str();
-			ssize_t bytes_written = write(client_fd, respStr, strlen(respStr));
-			if (bytes_written == -1)
-				std::cerr << "Write error" << std::endl;
+			if (this->_status == HttpStatus::BAD_REQUEST)
+			{
+				OUTNL("Bad Request");
+				this->_buffer_request.erase(client_fd);
+				close(client_fd);
+			}
+			else if (_checkEndMessage(client_fd))
+			{
+				Request request(this->_buffer_request[client_fd].c_str());
+				this->_buffer_request.erase(client_fd);
+				Response response(request, this->_config);
+				std::string responseStr = response.getResponse();
+				const char *respStr = responseStr.c_str();
+				ssize_t bytes_written = write(client_fd, respStr, strlen(respStr));
+				if (bytes_written == -1)
+					std::cerr << "Write error" << std::endl;
+			}
 		}
 	}
 }
@@ -153,16 +162,26 @@ void Server::_setNonBlocking(int fd)
 void Server::_fillBuffer(int fd, const char *str)
 {
 	std::string buff(str);
+	// OUTNL("fd: " << fd);
 	if (this->_buffer_request.find(fd) !=  this->_buffer_request.end())
 	{
 		this->_buffer_request[fd]  += buff;
-		OUTNL("if: " + this->_buffer_request[fd]);
+		// OUTNL("if: " + this->_buffer_request[fd]);
 	}
 	else
 	{
+		if (buff.find("HTTP/1.1") == std::string::npos)
+		{
+			this->_status = HttpStatus::BAD_REQUEST;
+			return ;
+		}
 		this->_buffer_request[fd] = buff;
-		OUTNL("else: " + this->_buffer_request[fd]);
-
 	}
+}
 
+bool	Server::_checkEndMessage(int fd)
+{
+	std::string &str = this->_buffer_request[fd];
+	// OUTNL("str: " << str);
+	return (str.find("\r\n\r\n") != (std::string::npos));
 }

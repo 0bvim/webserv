@@ -6,7 +6,7 @@
 /*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 15:53:34 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/28 17:10:04 by vde-frei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,13 @@ private:
 	void	_handleEvents();
 	void	_setNonBlocking(int fd);
 	void	_fillBuffer(int fd, const char *str);
+	bool	_checkEndMessage(int fd);
 
 	std::string _address;
 	int _port;
 	int _server_fd;
 	int _epoll_fd;
+	HttpStatus::Code _status;
 	std::map<int, std::string> _buffer_request;
 	struct epoll_event _events[MAX_EVENTS];
 	Config & _config;
