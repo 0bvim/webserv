@@ -36,6 +36,7 @@ public:
 	~Request();
 
 	t_request	getRequest() const;
+	void printRequest() const;
 
 private:
 	const char *	_str;

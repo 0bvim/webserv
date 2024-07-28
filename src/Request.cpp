@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:29:18 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/22 22:19:24 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/27 19:04:55 by lumedeir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,5 +70,16 @@ void	Request::_parseHTTPRequest()
 			std::string	value = this->_trim(line.substr(pos + 1));
 			this->_request.headers[key] = value;
 		}
+	}
+}
+
+void Request::printRequest() const
+{
+	std::cout << "Method: " << this->_request.method << std::endl;
+	std::cout << "URI: " << this->_request.uri << std::endl;
+	std::cout << "Headers:" << std::endl;
+	for (std::map<std::string, std::string>::const_iterator it = this->_request.headers.begin();
+		it != this->_request.headers.end(); ++it) {
+		std::cout << it->first << ": " << it->second << std::endl;
 	}
 }
