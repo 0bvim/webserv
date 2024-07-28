@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lumedeir < lumedeir@student.42sp.org.br    +#+  +:+       +#+        */
+/*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/27 19:05:46 by lumedeir         ###   ########.fr       */
+/*   Updated: 2024/07/28 16:15:37 by vde-frei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void Server::run()
 					}
 					this->_setNonBlocking(client_fd);
 					epoll_event event;
+					memset(&event, 0, sizeof(epoll_event));
 					event.events = EPOLLIN | EPOLLET;
 					event.data.fd = client_fd;
 					if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
@@ -97,6 +98,7 @@ void Server::_handleConnection(int client_fd)
 		else
 		{
 			buffer[bytes_read] = '\0';
+			_fillBuffer(client_fd, buffer);
 			Request request(buffer);
 			request.printRequest();
 			Response response(request, this->_config);
@@ -132,6 +134,7 @@ void Server::_initServer()
 	if (this->_epoll_fd == -1)
 		throw std::runtime_error("Failed to create epoll file descriptor");
 	epoll_event event;
+	memset(&event, 0, sizeof(epoll_event));
 	event.events = EPOLLIN | EPOLLET;
 	event.data.fd = this->_server_fd;
 	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, _server_fd, &event) == -1)
@@ -145,4 +148,21 @@ void Server::_setNonBlocking(int fd)
 		throw std::runtime_error("Failed to get file descriptor flags");
 	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
 		throw std::runtime_error("Failed to set non-blocking mode");
+}
+
+void Server::_fillBuffer(int fd, const char *str)
+{
+	std::string buff(str);
+	if (this->_buffer_request.find(fd) !=  this->_buffer_request.end())
+	{
+		this->_buffer_request[fd]  += buff;
+		OUTNL("if: " + this->_buffer_request[fd]);
+	}
+	else
+	{
+		this->_buffer_request[fd] = buff;
+		OUTNL("else: " + this->_buffer_request[fd]);
+
+	}
+
 }
