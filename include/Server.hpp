@@ -6,7 +6,7 @@
 /*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 17:10:04 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/28 22:16:50 by vde-frei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,11 @@ private:
 	void	_setNonBlocking(int fd);
 	void	_fillBuffer(int fd, const char *str);
 	bool	_checkEndMessage(int fd);
+	void	_printOnClient(int fd,  std::string const &str);
+	ssize_t	_readFromClient(int fd, char *buff);
+	bool	_handleAcceptError(int error_code);
+	void	_initServerAddress(sockaddr_in &server_add);
+	bool	_acceptClient();
 
 	std::string _address;
 	int _port;
