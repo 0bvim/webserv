@@ -8,7 +8,7 @@ typedef struct cgi_config
 {
 	std::string extension;
 	std::string path;
-}	t_cgi_config;
+} t_cgi_config;
 
 struct LocationConfig
 {
@@ -29,7 +29,7 @@ typedef struct ServerConfig
 	std::map<int, std::string> error_pages;
 	size_t client_max_body_size;
 	std::vector<LocationConfig> locations;
-}	t_ServerConfig;
+} t_ServerConfig;
 
 class Config
 {
@@ -47,7 +47,7 @@ private:
 	void parseConfigFile();
 	void parseServerBlock(const std::vector<std::string> &lines, size_t &index);
 	void parseLocationBlock(const std::vector<std::string> &lines, size_t &index, ServerConfig &server);
-	bool checkBraces(const std::vector<std::string>& lines);
+	bool checkBraces(const std::vector<std::string> &lines);
 };
 
 #endif

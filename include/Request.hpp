@@ -11,11 +11,12 @@
 /* ************************************************************************** */
 
 #ifndef REQUEST_HPP
-# define REQUEST_HPP
+#define REQUEST_HPP
 
-# include "common.hpp"
+#include "common.hpp"
 
-enum RequestMethod {
+enum RequestMethod
+{
 	GET,
 	POST,
 	DELETE,
@@ -24,28 +25,27 @@ enum RequestMethod {
 
 typedef struct s_request
 {
-	RequestMethod						method;
-	std::string							uri;
-	std::map<std::string, std::string>	headers;
+	RequestMethod method;
+	std::string uri;
+	std::map<std::string, std::string> headers;
 } t_request;
 
 class Request
 {
 public:
-	Request(const char * str);
+	Request(const char *str);
 	~Request();
 
-	t_request	getRequest() const;
+	t_request getRequest() const;
 	void printRequest() const;
 
 private:
-	const char *	_str;
-	t_request		_request;
+	const char *_str;
+	t_request _request;
 
-	std::string	_trim(const std::string & str);
-	void		_getMethod(const std::string & str);
-	void		_parseHTTPRequest();
-
+	std::string _trim(const std::string &str);
+	void _getMethod(const std::string &str);
+	void _parseHTTPRequest();
 };
 
 #endif
