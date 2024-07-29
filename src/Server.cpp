@@ -6,7 +6,7 @@
 /*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 22:21:48 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/28 22:28:03 by vde-frei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ Server::~Server()
 		close(_epoll_fd);
 }
 
-bool	Server::_acceptClient()
+bool Server::_acceptClient()
 {
 	while (true)
 	{
@@ -66,7 +66,7 @@ void Server::run()
 			if (_events[i].data.fd == _server_fd)
 			{
 				if (!this->_acceptClient())
-					break ;
+					break;
 			}
 			else
 				this->_handleConnection(_events[i].data.fd);
@@ -74,7 +74,7 @@ void Server::run()
 	}
 }
 
-bool	Server::_handleAcceptError(int error_code)
+bool Server::_handleAcceptError(int error_code)
 {
 	if (error_code == EAGAIN || error_code == EWOULDBLOCK)
 		return false;

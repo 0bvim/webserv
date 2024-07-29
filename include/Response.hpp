@@ -6,19 +6,21 @@
 /*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 17:42:07 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/07/28 22:33:21 by vde-frei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RESPONSE_HPP
-# define RESPONSE_HPP
+#define RESPONSE_HPP
 
-# include "common.hpp"
-# include "Request.hpp"
-# include "Config.hpp"
+#include "common.hpp"
+#include "Request.hpp"
+#include "Config.hpp"
 
-namespace HttpStatus {
-	enum Code {
+namespace HttpStatus
+{
+	enum Code
+	{
 		ZERO,
 		OK = 200,
 		CREATED = 201,
@@ -39,30 +41,29 @@ namespace HttpStatus {
 
 typedef struct s_response
 {
-	std::string							statusLine;
-	std::map<std::string, std::string>	headers;
-	std::string							body;
+	std::string statusLine;
+	std::map<std::string, std::string> headers;
+	std::string body;
 } t_response;
 
 class Response
 {
 public:
-	Response(Request & request, Config & config);
+	Response(Request &request, Config &config);
 	~Response();
 
-	std::string	getResponse() const;
+	std::string getResponse() const;
 
 private:
-	Request &	_request;
-	Config &	_config;
-	t_response	_response;
+	Request &_request;
+	Config &_config;
+	t_response _response;
 
-	void		_generateStatusLine();
-	void		_generateHeaders();
-	void		_generateBody();
-	std::string	_generateResponse() const;
-	bool		_identifyCGI();
-
+	void _generateStatusLine();
+	void _generateHeaders();
+	void _generateBody();
+	std::string _generateResponse() const;
+	bool _identifyCGI();
 };
 
 #endif

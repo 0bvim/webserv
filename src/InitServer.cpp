@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-void	Server::_initServerAddress(sockaddr_in &server_add)
+void Server::_initServerAddress(sockaddr_in &server_add)
 {
 	memset(&server_add, 0, sizeof(server_add));
 	server_add.sin_family = AF_INET;
@@ -33,4 +33,3 @@ void Server::_initServer()
 	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, _server_fd, &event) == -1)
 		throw std::runtime_error("Failed to add server socket to epoll");
 }
-
