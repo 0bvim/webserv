@@ -49,6 +49,9 @@ re: fclean all
 run: all
 	@./$(NAME) default.conf
 
+run2: all
+	@./$(NAME) arquivo.conf
+
 tests: $(TEST_TARGET)
 
 $(TEST_TARGET): $(filter-out $(BUILD_DIR)/main.o,$(OBJS)) $(TEST_OBJS) | $(TEST_BIN_DIR)
