@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:07:40 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/03 18:13:44 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/03 18:49:01 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,19 +85,14 @@ void Response::_identifyCGI()
 {
 	t_request request = this->_request.getRequest();
 	std::vector<ServerConfig> servers = this->_config.getServers();
-	for (size_t i = 0; i < servers.size(); i++)
+	for (size_t i = servers.size() - 1; i != std::string::npos; --i)
 	{
-		if (servers[i].server_name == trim(request.headers["Host"]))
-		{
-			for (size_t j = 0; j < servers[i].locations.size(); j++)
-			{
-				if (request.uri.find(servers[i].locations[j].path) != std::string::npos)
-				{
+		if (servers[i].server_name == trim(request.headers["Host"]) || i == 0) {
+			for (size_t j = 0; j < servers[i].locations.size(); j++) {
+				if (request.uri.find(servers[i].locations[j].path) != std::string::npos) {
 					for (size_t k = 0; k < servers[i].locations[j].cgi.size(); k++)
-					{
 						if (request.uri.find(servers[i].locations[j].cgi[k].extension) != std::string::npos)
 							this->_response.isCGI = true;
-					}
 				}
 			}
 		}
@@ -120,16 +115,13 @@ void Response::_error405()
 	t_request request = this->_request.getRequest();
 
 	this->_response.statusLine = "HTTP/1.1 405 Method Not Allowed";
-	for (size_t i = 0; i < servers.size(); i++)
+	for (size_t i = servers.size() - 1; i != std::string::npos; --i)
 	{
-		if (servers[i].server_name == trim(request.headers["Host"]))
+		if (servers[i].server_name == trim(request.headers["Host"]) || i == 0)
 		{
-			if (servers[i].error_pages.find(405) != servers[i].error_pages.end()) {
-				OUTNL("HERE1");
+			if (servers[i].error_pages.find(405) != servers[i].error_pages.end())
 				this->_generateBody(servers[i].error_pages[405]);
-			}
 			else {
-				OUTNL("HERE2");
 				std::string path("/web/405.html");
 				this->_generateBody(path);
 			}
