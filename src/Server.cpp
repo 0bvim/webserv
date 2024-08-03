@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 22:28:03 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/08/03 14:49:55 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ void Server::_handleConnection(int client_fd)
 			else if (_checkEndMessage(client_fd))
 			{
 				Request request(this->_buffer_request[client_fd].c_str());
+				//request.printRequest();
 				Response response(request, this->_config);
 				this->_printOnClient(client_fd, response.getResponse());
 			}
