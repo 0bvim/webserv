@@ -1,8 +1,6 @@
 #include "../include/Server.hpp"
 #include "../include/Config.hpp"
-#include <string>
 
-// a main tem que receber argv para conseguirmos verificar o arquivo.
 int main(int ac, char **av)
 {
 	std::string file;
@@ -15,10 +13,7 @@ int main(int ac, char **av)
 	try
 	{
 		Config config(file);
-		// Server server(config.getServerAddress(), config.getServerPort());
-		// OUTNL("address: " << config.getServerAddress());
-		// OUTNL("PORT: " << config.getServerPort());
-		Server server(config.getServerAddress(), config.getServerPort());
+		Server server(config);
 		server.run();
 	}
 	catch (std::exception &e)

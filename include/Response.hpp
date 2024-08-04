@@ -3,21 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/22 22:27:39 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/07/28 22:33:21 by vde-frei         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RESPONSE_HPP
-# define RESPONSE_HPP
+#define RESPONSE_HPP
 
-# include "common.hpp"
-# include "Request.hpp"
+#include "common.hpp"
+#include "Request.hpp"
+#include "Config.hpp"
 
-namespace HttpStatus {
-	enum Code {
+namespace HttpStatus
+{
+	enum Code
+	{
+		ZERO,
 		OK = 200,
 		CREATED = 201,
 		NO_CONTENT = 204,
@@ -37,28 +41,29 @@ namespace HttpStatus {
 
 typedef struct s_response
 {
-	std::string							statusLine;
-	std::map<std::string, std::string>	headers;
-	std::string							body;
+	std::string statusLine;
+	std::map<std::string, std::string> headers;
+	std::string body;
 } t_response;
 
 class Response
 {
 public:
-	Response(Request & request);
+	Response(Request &request, Config &config);
 	~Response();
 
-	std::string	getResponse() const;
+	std::string getResponse() const;
 
 private:
-	Request &	_request;
-	t_response	_response;
+	Request &_request;
+	Config &_config;
+	t_response _response;
 
-	void		_generateStatusLine();
-	void		_generateHeaders();
-	void		_generateBody();
-	std::string	_generateResponse() const;
-
+	void _generateStatusLine();
+	void _generateHeaders();
+	void _generateBody();
+	std::string _generateResponse() const;
+	bool _identifyCGI();
 };
 
 #endif

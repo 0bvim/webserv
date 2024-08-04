@@ -5,6 +5,11 @@ Config::Config(const std::string &filePath) : filePath(filePath)
 	parseConfigFile();
 }
 
+std::vector<ServerConfig> const &Config::getServers() const
+{
+	return this->servers;
+}
+
 void Config::parseConfigFile()
 {
 	std::ifstream configFile(filePath.c_str());
@@ -18,7 +23,8 @@ void Config::parseConfigFile()
 	std::vector<std::string> lines;
 	while (std::getline(configFile, line))
 		lines.push_back(line);
-	try{
+	try
+	{
 		size_t index = 0;
 		checkBraces(lines);
 		while (index < lines.size())
@@ -39,20 +45,23 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 {
 	ServerConfig server;
 
+	// memset(&server, 0, sizeof(ServerConfig));
 	while (++index < lines.size())
 	{
 		std::string trimmedLine = trim(lines[index]);
 		if (trimmedLine == "}")
 			break;
 		if (!trimmedLine.empty() &&
-    			trimmedLine[trimmedLine.size() - 1] != ';' &&
-    			trimmedLine.find("location") == std::string::npos){
+			trimmedLine[trimmedLine.size() - 1] != ';' &&
+			trimmedLine.find("location") == std::string::npos)
+		{
 			throw std::runtime_error("Invalid line in server block");
 		}
 		else if (trimmedLine.find("server_name") == 0)
 			server.server_name = trimmedLine.substr(12).erase(trimmedLine.size() - 13);
 		else if (trimmedLine.find("listen") == 0)
 		{
+			// server.listen = trimmedLine.substr(7).erase(trimmedLine.size() - 8);
 			std::istringstream iss(trimmedLine.substr(7).erase(trimmedLine.size() - 8));
 			iss >> server.listen;
 		}
@@ -76,7 +85,8 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 			{
 				parseLocationBlock(lines, index, server);
 			}
-			catch (std::exception &e){
+			catch (std::exception &e)
+			{
 				throw std::runtime_error(e.what());
 			}
 		}
@@ -98,7 +108,8 @@ void Config::parseLocationBlock(const std::vector<std::string> &lines, size_t &i
 		if (trimmedLine == "}")
 			break;
 		if (!trimmedLine.empty() &&
-    			trimmedLine[trimmedLine.size() - 1] != ';'){
+			trimmedLine[trimmedLine.size() - 1] != ';')
+		{
 			throw std::runtime_error("Invalid line in server block");
 		}
 		else if (trimmedLine.find("autoindex") == 0)
@@ -121,12 +132,14 @@ void Config::parseLocationBlock(const std::vector<std::string> &lines, size_t &i
 			while (iss >> method)
 				location.allow_methods.push_back(method);
 		}
-		else if (trimmedLine.find("cgi ") == 0){
+		else if (trimmedLine.find("cgi ") == 0)
+		{
 			std::vector<std::string> tokens = split(trimmedLine, ' ');
 			if (tokens.size() != 3)
 				throw std::runtime_error("Invalid cgi line");
-			location.cgi_extension = tokens[1];
-			location.cgi_path = tokens[2];
+			location.cgi.push_back(t_cgi_config());
+			location.cgi.back().extension = tokens[1];
+			location.cgi.back().path = tokens[2];
 		}
 		else if (trimmedLine.find("redirect") == 0)
 			location.redirect = trimmedLine.substr(9).erase(trimmedLine.size() - 10);
@@ -135,26 +148,30 @@ void Config::parseLocationBlock(const std::vector<std::string> &lines, size_t &i
 	server.locations.push_back(location);
 }
 
-bool Config::checkBraces(const std::vector<std::string>& lines) {
-    int openBraces = 0;
+bool Config::checkBraces(const std::vector<std::string> &lines)
+{
+	int openBraces = 0;
 
-    for (size_t i = 0; i < lines.size(); ++i) {
-        const std::string& line = lines[i];
-        for (size_t j = 0; j < line.size(); ++j) {
-            char c = line[j];
-            if (c == '{')
-                openBraces++;
-            else if (c == '}') {
-                if (openBraces == 0)
-                    throw std::runtime_error("Unmatched closing brace '}' found.");
-                openBraces--;
-            }
-        }
-    }
-    if (openBraces != 0)
-        throw std::runtime_error("Unmatched opening brace '{' found.");
+	for (size_t i = 0; i < lines.size(); ++i)
+	{
+		const std::string &line = lines[i];
+		for (size_t j = 0; j < line.size(); ++j)
+		{
+			char c = line[j];
+			if (c == '{')
+				openBraces++;
+			else if (c == '}')
+			{
+				if (openBraces == 0)
+					throw std::runtime_error("Unmatched closing brace '}' found.");
+				openBraces--;
+			}
+		}
+	}
+	if (openBraces != 0)
+		throw std::runtime_error("Unmatched opening brace '{' found.");
 
-    return true;
+	return true;
 }
 
 void Config::printServers() const
@@ -187,8 +204,6 @@ void Config::printServers() const
 			for (size_t k = 0; k < location.allow_methods.size(); ++k)
 				std::cout << location.allow_methods[k] << " ";
 			std::cout << "\n";
-			std::cout << "  CGI Extension: " << location.cgi_extension << "\n";
-			std::cout << "  CGI Path: " << location.cgi_path << "\n";
 			std::cout << "  Redirect: " << location.redirect << "\n";
 		}
 		std::cout << "\n";
