@@ -99,8 +99,9 @@ void Config::parseLocationBlock(const std::vector<std::string> &lines, size_t &i
 {
 	LocationConfig location;
 
-	size_t pos = lines[index].find(' ');
-	location.path = lines[index].substr(pos + 1);
+	std::string trimmedLine= trim(lines[index]);
+	size_t pos = trimmedLine.find(' ');
+	location.path = trim(trimmedLine.substr(pos + 1, trimmedLine.size() - pos - 2));
 
 	while (++index < lines.size())
 	{

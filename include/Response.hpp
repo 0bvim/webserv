@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 22:33:21 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/08/03 17:50:07 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ namespace HttpStatus
 typedef struct s_response
 {
 	std::string statusLine;
+	bool		isCGI;
 	std::map<std::string, std::string> headers;
 	std::string body;
 } t_response;
@@ -61,9 +62,12 @@ private:
 
 	void _generateStatusLine();
 	void _generateHeaders();
-	void _generateBody();
+	void _generateBody(std::string &path);
 	std::string _generateResponse() const;
-	bool _identifyCGI();
+	void _identifyCGI();
+
+	bool _checkErrors();
+	void _error405();
 };
 
 #endif

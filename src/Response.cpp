@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:07:40 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 22:32:34 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/08/03 18:49:01 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,12 @@ Response::Response(Request &request, Config &config) : _request(request), _confi
 	// o request será usado para gerar o response. está (void) para compilar
 	(void)this->_request;
 	this->_identifyCGI();
+	if (this->_checkErrors())
+		return;
 	this->_generateStatusLine();
 	this->_generateHeaders();
-	this->_generateBody();
+	std::string path("/web/index.html");
+	this->_generateBody(path);
 }
 
 Response::~Response()
@@ -43,9 +46,9 @@ void Response::_generateHeaders()
 	this->_response.headers["Content-Type"] = "text/html";
 }
 
-void Response::_generateBody()
+void Response::_generateBody(std::string &path)
 {
-	std::ifstream file("./web/index.html");
+	std::ifstream file(path.c_str());
 
 	if (file.is_open())
 	{
@@ -55,6 +58,7 @@ void Response::_generateBody()
 		bufferStr = buffer.str();
 		this->_response.body = bufferStr;
 		this->_response.headers["Content-Length"] = itoa(bufferStr.size());
+		this->_response.headers["Content-Type"] = "text/html";
 		file.close();
 	}
 	else
@@ -77,35 +81,50 @@ std::string Response::_generateResponse() const
 	return response;
 }
 
-bool Response::_identifyCGI()
+void Response::_identifyCGI()
 {
 	t_request request = this->_request.getRequest();
 	std::vector<ServerConfig> servers = this->_config.getServers();
-	OUTNL("PRINT 1");
-	for (size_t i = 0; i < servers.size(); i++)
+	for (size_t i = servers.size() - 1; i != std::string::npos; --i)
 	{
-		OUTNL("PRINT 2: " << request.headers["Host"]);
-		if (servers[i].server_name == request.headers["Host"])
-		{
-			OUTNL("PRINT 3");
-			for (size_t j = 0; j < servers[i].locations.size(); j++)
-			{
-				OUTNL("PRINT 4");
-				if (request.uri.find(servers[i].locations[j].path) != std::string::npos)
-				{
+		if (servers[i].server_name == trim(request.headers["Host"]) || i == 0) {
+			for (size_t j = 0; j < servers[i].locations.size(); j++) {
+				if (request.uri.find(servers[i].locations[j].path) != std::string::npos) {
 					for (size_t k = 0; k < servers[i].locations[j].cgi.size(); k++)
-					{
-						OUTNL(servers[i].locations[j].cgi[k].extension);
 						if (request.uri.find(servers[i].locations[j].cgi[k].extension) != std::string::npos)
-						{
-							std::cout << "CGI found" << std::endl;
-							return true;
-						}
-					}
+							this->_response.isCGI = true;
 				}
 			}
 		}
 	}
-	std::cout << "CGI not found" << std::endl;
-	return false;
+	this->_response.isCGI = false;
+}
+
+bool Response::_checkErrors()
+{
+	if (this->_request.getRequest().method == OTHER)
+		this->_error405();
+	else
+		return false;
+	return true;
+}
+
+void Response::_error405()
+{
+	std::vector<ServerConfig> servers = this->_config.getServers();
+	t_request request = this->_request.getRequest();
+
+	this->_response.statusLine = "HTTP/1.1 405 Method Not Allowed";
+	for (size_t i = servers.size() - 1; i != std::string::npos; --i)
+	{
+		if (servers[i].server_name == trim(request.headers["Host"]) || i == 0)
+		{
+			if (servers[i].error_pages.find(405) != servers[i].error_pages.end())
+				this->_generateBody(servers[i].error_pages[405]);
+			else {
+				std::string path("/web/405.html");
+				this->_generateBody(path);
+			}
+		}
+	}
 }
