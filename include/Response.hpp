@@ -65,6 +65,7 @@ private:
 	void _generateBody(std::string &path);
 	std::string _generateResponse() const;
 	void _identifyCGI();
+	void _executeCgi();
 
 	bool _checkErrors();
 	void _error405();
