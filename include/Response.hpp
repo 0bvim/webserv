@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/03 17:50:07 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/04 21:05:04 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ private:
 	void _generateBody(std::string &path);
 	std::string _generateResponse() const;
 	void _identifyCGI();
+	void _executeCgi();
 
 	bool _checkErrors();
 	void _error405();
