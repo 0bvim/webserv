@@ -6,7 +6,7 @@
 /*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/04 21:09:40 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/08/08 01:55:38 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ bool Server::_acceptClient()
 		if (client_fd == -1)
 			if (!this->_handleAcceptError(errno))
 				return false;
-		this->_setNonBlocking(client_fd);
 		epoll_event event;
 		memset(&event, 0, sizeof(epoll_event));
 		event.events = EPOLLIN | EPOLLET;

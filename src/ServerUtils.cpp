@@ -36,8 +36,6 @@ ssize_t Server::_readFromClient(int fd, char *buff)
 	ssize_t bytes_read = read(fd, buff, BUFFER_SIZE - 1);
 	if (bytes_read == -1)
 	{
-		if (errno == EAGAIN || errno == EWOULDBLOCK)
-			return 0;
 		std::cerr << "Read error: " << strerror(errno) << std::endl;
 		close(fd);
 	}

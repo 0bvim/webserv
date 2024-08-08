@@ -10,7 +10,6 @@ void Server::_initServerAddress(sockaddr_in &server_add)
 		throw std::runtime_error("Failed to bind socket");
 	if (listen(_server_fd, MAX_CONNECTIONS) == -1)
 		throw std::runtime_error("Failed to listen socket");
-	this->_setNonBlocking(this->_server_fd);
 	this->_epoll_fd = epoll_create1(0);
 	if (this->_epoll_fd == -1)
 		throw std::runtime_error("Failed to create epoll file descriptor");
@@ -18,7 +17,7 @@ void Server::_initServerAddress(sockaddr_in &server_add)
 
 void Server::_initServer()
 {
-	this->_server_fd = socket(AF_INET, SOCK_STREAM, 0);
+	this->_server_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (this->_server_fd == -1)
 		throw std::runtime_error("Failed to create socket");
 	int opt = 1;

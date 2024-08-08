@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 14:46:10 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 22:32:11 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/08/08 01:55:14 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,7 @@ void Client::connectToServer(const int serverSocket)
 	this->_clientSocket = accept(serverSocket,
 								 (struct sockaddr *)&this->_address, &addressSize);
 	if (this->_clientSocket == -1)
-	{
 		throw std::runtime_error("Error connecting to the server");
-	}
-	this->_setNonBlock();
 }
 
 int Client::getClientSocket(void) const
@@ -50,16 +47,16 @@ void Client::_createClientSocket(void)
 
 void Client::_setNonBlock(void)
 {
-	int flags;
+	// int flags;
 
-	flags = fcntl(this->_clientSocket, F_GETFL, 0);
-	if (flags == -1)
-	{
-		throw std::runtime_error("Error getting client socket flags");
-	}
-	flags |= O_NONBLOCK;
-	if ((fcntl(this->_clientSocket, F_SETFL, flags)) == -1)
-	{
-		throw std::runtime_error("Error setting client to nonblock");
-	}
+	// flags = fcntl(this->_clientSocket, F_GETFL, 0);
+	// if (flags == -1)
+	// {
+	// 	throw std::runtime_error("Error getting client socket flags");
+	// }
+	// flags |= O_NONBLOCK;
+	// if ((fcntl(this->_clientSocket, F_SETFL, flags)) == -1)
+	// {
+	// 	throw std::runtime_error("Error setting client to nonblock");
+	// }
 }
