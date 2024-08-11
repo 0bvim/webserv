@@ -23,7 +23,9 @@ void Config::parseConfigFile()
 	std::string line;
 	std::vector<std::string> lines;
 	while (std::getline(configFile, line))
-		lines.push_back(line);
+    lines.push_back(line);
+  if (!lines.size())
+    throw std::runtime_error("File is empty \U0001F919");
 	try
 	{
 		size_t index = 0;
