@@ -16,6 +16,5 @@ int main(int ac, char **av)
 	{
 		std::cerr << RED("Error: ") << e.what() << std::endl;
 	}
-
 	return 0;
 }
