@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #define DEFAULT_CONFIG_FILE "default.conf"
+#include <sys/stat.h>
 
 typedef struct cgi_config
 {
@@ -44,6 +45,7 @@ private:
 	std::string filePath;
 	std::vector<ServerConfig> servers;
 
+  void checkFile() const;
 	void parseConfigFile();
 	void parseServerBlock(const std::vector<std::string> &lines, size_t &index);
 	void parseLocationBlock(const std::vector<std::string> &lines, size_t &index, ServerConfig &server);

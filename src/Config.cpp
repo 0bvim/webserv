@@ -1,7 +1,8 @@
-#include "Config.hpp"
+#include "../include/Config.hpp"
 
 Config::Config(const std::string &filePath) : filePath(filePath)
 {
+  this->checkFile();
 	parseConfigFile();
 }
 

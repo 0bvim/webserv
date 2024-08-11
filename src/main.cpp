@@ -5,11 +5,7 @@ int main(int ac, char **av)
 {
 	std::string file;
 
-	if (ac == 2)
-		file = av[1];
-	else
-		file = DEFAULT_CONFIG_FILE;
-
+  ac == 2 ? file = av[1] : file = DEFAULT_CONFIG_FILE;
 	try
 	{
 		Config config(file);
