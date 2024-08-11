@@ -3,7 +3,7 @@
 
 Config::Config(const std::string &filePath) : filePath(filePath)
 {
-  this->checkFile();
+	this->checkFile();
 	parseConfigFile();
 }
 
@@ -14,12 +14,12 @@ std::vector<ServerConfig> const &Config::getServers() const
 
 static void checkLinesContent(const std::vector<std::string> &vec)
 {
-  std::vector<std::string>::const_iterator it;
+	std::vector<std::string>::const_iterator it;
 
-  for (it = vec.begin(); it != vec.end(); ++it)
-    if (it->find("server {") != std::string::npos)
-      return ;
-  throw std::runtime_error("Server Not Found");
+	for (it = vec.begin(); it != vec.end(); ++it)
+		if (it->find("server {") != std::string::npos)
+			return;
+	throw std::runtime_error("Server Not Found");
 }
 
 void Config::parseConfigFile()
@@ -33,10 +33,10 @@ void Config::parseConfigFile()
 	std::string line;
 	std::vector<std::string> lines;
 	while (std::getline(configFile, line))
-    lines.push_back(line);
-  if (!lines.size())
-    throw std::runtime_error("File is empty \U0001F919");
-  checkLinesContent(lines);
+		lines.push_back(line);
+	if (!lines.size())
+		throw std::runtime_error("File is empty \U0001F919");
+	checkLinesContent(lines);
 	try
 	{
 		size_t index = 0;
@@ -110,7 +110,7 @@ void Config::parseLocationBlock(const std::vector<std::string> &lines, size_t &i
 {
 	LocationConfig location;
 
-	std::string trimmedLine= trim(lines[index]);
+	std::string trimmedLine = trim(lines[index]);
 	size_t pos = trimmedLine.find(' ');
 	location.path = trim(trimmedLine.substr(pos + 1, trimmedLine.size() - pos - 2));
 
