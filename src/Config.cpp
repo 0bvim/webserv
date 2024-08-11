@@ -1,4 +1,5 @@
 #include "../include/Config.hpp"
+#include <stdexcept>
 
 Config::Config(const std::string &filePath) : filePath(filePath)
 {
@@ -11,6 +12,16 @@ std::vector<ServerConfig> const &Config::getServers() const
 	return this->servers;
 }
 
+static void checkLinesContent(const std::vector<std::string> &vec)
+{
+  std::vector<std::string>::const_iterator it;
+
+  for (it = vec.begin(); it != vec.end(); ++it)
+    if (it->find("server {") != std::string::npos)
+      return ;
+  throw std::runtime_error("Server Not Found");
+}
+
 void Config::parseConfigFile()
 {
 	std::ifstream configFile(filePath.c_str());
@@ -19,13 +30,13 @@ void Config::parseConfigFile()
 		std::cerr << "Error opening config file: " << filePath << std::endl;
 		return;
 	}
-
 	std::string line;
 	std::vector<std::string> lines;
 	while (std::getline(configFile, line))
     lines.push_back(line);
   if (!lines.size())
     throw std::runtime_error("File is empty \U0001F919");
+  checkLinesContent(lines);
 	try
 	{
 		size_t index = 0;
@@ -48,7 +59,6 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 {
 	ServerConfig server;
 
-	// memset(&server, 0, sizeof(ServerConfig));
 	while (++index < lines.size())
 	{
 		std::string trimmedLine = trim(lines[index]);
@@ -94,7 +104,6 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 			}
 		}
 	}
-
 	servers.push_back(server);
 }
 
