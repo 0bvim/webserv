@@ -112,12 +112,3 @@ void Server::_handleConnection(int client_fd)
 		}
 	}
 }
-
-void Server::_setNonBlocking(int fd)
-{
-	int flags = fcntl(fd, F_GETFL, 0);
-	if (flags == -1)
-		throw std::runtime_error("Failed to get file descriptor flags");
-	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
-		throw std::runtime_error("Failed to set non-blocking mode");
-}

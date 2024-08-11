@@ -74,7 +74,6 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 			server.server_name = trimmedLine.substr(12).erase(trimmedLine.size() - 13);
 		else if (trimmedLine.find("listen") == 0)
 		{
-			// server.listen = trimmedLine.substr(7).erase(trimmedLine.size() - 8);
 			std::istringstream iss(trimmedLine.substr(7).erase(trimmedLine.size() - 8));
 			iss >> server.listen;
 		}
@@ -157,7 +156,6 @@ void Config::parseLocationBlock(const std::vector<std::string> &lines, size_t &i
 		else if (trimmedLine.find("redirect") == 0)
 			location.redirect = trimmedLine.substr(9).erase(trimmedLine.size() - 10);
 	}
-
 	server.locations.push_back(location);
 }
 
@@ -183,7 +181,6 @@ bool Config::checkBraces(const std::vector<std::string> &lines)
 	}
 	if (openBraces != 0)
 		throw std::runtime_error("Unmatched opening brace '{' found.");
-
 	return true;
 }
 
@@ -198,9 +195,7 @@ void Config::printServers() const
 		std::cout << "Client Max Body Size: " << server.client_max_body_size << "\n";
 
 		for (std::map<int, std::string>::const_iterator it = server.error_pages.begin(); it != server.error_pages.end(); ++it)
-		{
 			std::cout << "Error Page " << it->first << ": " << it->second << "\n";
-		}
 
 		for (size_t j = 0; j < server.locations.size(); ++j)
 		{

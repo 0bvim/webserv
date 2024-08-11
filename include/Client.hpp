@@ -28,7 +28,6 @@ private:
 	struct sockaddr_in _address;
 
 	void _createClientSocket(void);
-	void _setNonBlock(void);
 };
 
 #endif
