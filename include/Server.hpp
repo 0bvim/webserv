@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 22:29:16 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/08/12 20:27:30 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 class Server
 {
 public:
-	Server(Config &config);
+	Server(ServerConfig &config);
 	~Server();
 	void run();
 
@@ -46,7 +46,7 @@ private:
 	HttpStatus::Code _status;
 	std::map<int, std::string> _buffer_request;
 	struct epoll_event _events[MAX_EVENTS];
-	Config &_config;
+	ServerConfig &_config;
 };
 
 #endif

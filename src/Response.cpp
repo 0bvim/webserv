@@ -6,13 +6,13 @@
 /*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:07:40 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/04 21:06:24 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/08/12 20:33:32 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 
-Response::Response(Request &request, Config &config) : _request(request), _config(config)
+Response::Response(Request &request, ServerConfig &config) : _request(request), _config(config)
 {
 	// o request será usado para gerar o response. está (void) para compilar
 	(void)this->_request;

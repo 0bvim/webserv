@@ -6,7 +6,7 @@
 /*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/04 21:05:04 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/08/12 20:42:49 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,14 @@ typedef struct s_response
 class Response
 {
 public:
-	Response(Request &request, Config &config);
+	Response(Request &request, ServerConfig &config);
 	~Response();
 
 	std::string getResponse() const;
 
 private:
 	Request &_request;
-	Config &_config;
+	ServerConfig &_config;
 	t_response _response;
 
 	void _generateStatusLine();

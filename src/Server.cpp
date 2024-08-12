@@ -6,20 +6,20 @@
 /*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/11 02:11:25 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/08/12 20:42:35 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/Server.hpp"
 
-Server::Server(Config &config) : _config(config)
+Server::Server(ServerConfig &config) : _config(config)
 {
 	this->_status = HttpStatus::ZERO;
-	this->_address = config.getServerAddress();
-	this->_port = config.getServerPort();
+	this->_address = config.address;
+	this->_port = config.port;
+	this->_initServer();
 	this->_server_fd = -1;
 	this->_epoll_fd = -1;
-	this->_initServer();
 	OUTNL(MAGENTA("Read to connect in: " << _address + ":" << _port));
 }
 

@@ -25,8 +25,9 @@ struct LocationConfig
 
 typedef struct ServerConfig
 {
-	std::string server_name;
-	std::string listen;
+	std::string	server_name;
+	std::string	address;
+	int 		port;
 	std::map<int, std::string> error_pages;
 	size_t client_max_body_size;
 	std::vector<LocationConfig> locations;
@@ -37,8 +38,6 @@ class Config
 public:
 	Config(const std::string &filePath);
 	const std::vector<ServerConfig> &getServers() const;
-	const std::string getServerAddress() const;
-	int getServerPort() const;
 	void printServers() const;
 
 private:

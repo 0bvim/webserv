@@ -9,8 +9,13 @@ int main(int ac, char **av)
 	try
 	{
 		Config config(file);
-		Server server(config);
-		server.run();
+		const std::vector<ServerConfig> & servers = config.getServers();
+		for (std::vector<ServerConfig>::const_iterator it = servers.begin(); 
+			it != servers.end(); ++it)
+		{
+			Server server(*it);
+			server.run();
+		}
 	}
 	catch (std::exception &e)
 	{
