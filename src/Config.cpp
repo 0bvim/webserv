@@ -194,7 +194,8 @@ void Config::printServers() const
 	{
 		const ServerConfig &server = servers[i];
 		std::cout << "Server Name: " << server.server_name << "\n";
-		std::cout << "Listen: " << server.listen << "\n";
+		std::cout << "Address: " << server.address << "\n";
+		std::cout << "Port: " << server.port << "\n";
 		std::cout << "Client Max Body Size: " << server.client_max_body_size << "\n";
 
 		for (std::map<int, std::string>::const_iterator it = server.error_pages.begin(); it != server.error_pages.end(); ++it)

@@ -14,7 +14,8 @@ int main(int ac, char **av)
 			it != servers.end(); ++it)
 		{
 			Server server(*it);
-			server.run();
+			//server.run();
+			std::cout << "Server started on port" << std::endl;
 		}
 	}
 	catch (std::exception &e)

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmorettietti <bmoresp.org.bi@t.42sp.orgbsp.org.br>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:07:40 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/12 20:33:32 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/08/17 16:312498 bybmorettinivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 
-Response::Response(Request &request, ServerConfig &config) : _request(request), _config(config)
+Response::Response(Request &request, const ServerConfig &config) : _request(request), _config(config)
 {
 	// o request será usado para gerar o response. está (void) para compilar
 	(void)this->_request;
@@ -94,20 +94,17 @@ bool Response::_checkErrors()
 
 void Response::_error405()
 {
-	std::vector<ServerConfig> servers = this->_config.getServers();
+	const ServerConfig & server = this->_config;
 	t_request request = this->_request.getRequest();
 
 	this->_response.statusLine = "HTTP/1.1 405 Method Not Allowed";
-	for (size_t i = servers.size() - 1; i != std::string::npos; --i)
+	if (server.server_name == trim(request.headers["Host"]))
 	{
-		if (servers[i].server_name == trim(request.headers["Host"]) || i == 0)
-		{
-			if (servers[i].error_pages.find(405) != servers[i].error_pages.end())
-				this->_generateBody(servers[i].error_pages[405]);
-			else {
-				std::string path("/web/405.html");
-				this->_generateBody(path);
-			}
+		if (server.error_pages.find(405) != server.error_pages.end())
+			this->_generateBody((std::string&)server.error_pages.at(405));
+		else {
+			std::string path("/web/405.html");
+			this->_generateBody(path);
 		}
 	}
 }
@@ -115,17 +112,17 @@ void Response::_error405()
 void Response::_identifyCGI()
 {
 	t_request request = this->_request.getRequest();
-	std::vector<ServerConfig> servers = this->_config.getServers();
-	for (size_t i = servers.size() - 1; i != std::string::npos; --i)
+	ServerConfig server = this->_config;
+	for (size_t j = 0; j < server.locations.size(); j++)
 	{
-		if (servers[i].server_name == trim(request.headers["Host"]) || i == 0) {
-			for (size_t j = 0; j < servers[i].locations.size(); j++) {
-				if (request.uri.find(servers[i].locations[j].path) != std::string::npos) {
-					for (size_t k = 0; k < servers[i].locations[j].cgi.size(); k++)
-						if (request.uri.find(servers[i].locations[j].cgi[k].extension) != std::string::npos) {
-							this->_response.isCGI = true;
-							return;
-						}
+		if (request.uri.find(server.locations[j].path) != std::string::npos)
+		{
+			for (size_t k = 0; k < server.locations[j].cgi.size(); k++)
+			{
+				if (request.uri.find(server.locations[j].cgi[k].extension) != std::string::npos)
+				{
+					this->_response.isCGI = true;
+					return;
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 {
 	"files.associations": {
+		"*.hpp": "cpp",
 		"array": "cpp",
 		"atomic": "cpp",
 		"bit": "cpp",
@@ -56,6 +57,20 @@
 		"iomanip": "cpp",
 		"ranges": "cpp",
 		"stop_token": "cpp",
-		"thread": "cpp"
+		"thread": "cpp",
+		"any": "cpp",
+		"strstream": "cpp",
+		"bitset": "cpp",
+		"codecvt": "cpp",
+		"complex": "cpp",
+		"condition_variable": "cpp",
+		"list": "cpp",
+		"set": "cpp",
+		"mutex": "cpp",
+		"semaphore": "cpp",
+		"cfenv": "cpp",
+		"cinttypes": "cpp",
+		"typeindex": "cpp",
+		"variant": "cpp"
 	}
 }
