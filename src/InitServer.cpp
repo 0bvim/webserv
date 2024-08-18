@@ -10,9 +10,6 @@ void Server::_initServerAddress(sockaddr_in &server_add)
 		throw std::runtime_error("Failed to bind socket");
 	if (listen(_server_fd, MAX_CONNECTIONS) == -1)
 		throw std::runtime_error("Failed to listen socket");
-	// this->_epoll_fd = epoll_create1(0);
-	// if (this->_epoll_fd == -1)
-		// throw std::runtime_error("Failed to create epoll file descriptor");
 }
 
 void Server::_initServer()
@@ -26,9 +23,6 @@ void Server::_initServer()
 		throw std::runtime_error("Failed to set socket options");
 	sockaddr_in server_addr;
 	this->_initServerAddress(server_addr);
-	// epoll_event event;
-	// memset(&event, 0, sizeof(epoll_event));
-	// event.events = EPOLLIN | EPOLLET;
 	(*_event).data.fd = this->_server_fd;
 	OUTNL("epoll fd > " << _epoll_fd << " server fd > " << _server_fd);
 	if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, _server_fd, _event) == -1)

@@ -26,6 +26,7 @@ Server::Server(const ServerConfig &config, int epoll_fd, epoll_event *event) : _
 
 Server::~Server()
 {
+	OUTNL("DESTUCTOR CALLED");
 	if (_server_fd != -1)
 		close(_server_fd);
 	if (_epoll_fd != -1)
