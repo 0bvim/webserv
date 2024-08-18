@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 16:05:36 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/18 16:21:23 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/18 17:29:30 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ private:
 	int	_epoll_fd;
     epoll_event *_event;
 
-
+	void	handleEvents();
 };
 
 #endif

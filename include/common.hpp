@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/04 16:53:08 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/18 17:29:32 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 
 // C++ LIBS
 #include <cerrno>
+#include <algorithm>
 #include <cstring>
 #include <csignal>
 #include <cstdlib>
