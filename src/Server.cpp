@@ -3,22 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/17 17:04:10 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/08/17 16:21:49 bbbnivicius      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/Server.hpp"
 
-Server::Server(const ServerConfig &config) :_config(config)
+Server::Server(const ServerConfig &config, int epoll_fd, epoll_event *event) : _config(config)
 {
 	this->_status = HttpStatus::ZERO;
 	this->_address = config.address;
 	this->_port = config.port;
 	this->_server_fd = -1;
-	this->_epoll_fd = -1;
+	this->_epoll_fd = epoll_fd;
+	this->_event = event;
 	this->_initServer();
 	OUTNL(MAGENTA("Read to connect in: " << _address + ":" << _port));
 }
@@ -111,4 +112,9 @@ void Server::_handleConnection(int client_fd)
 			}
 		}
 	}
+}
+
+int	Server::_getServerFd() const
+{
+	return this->_server_fd;
 }

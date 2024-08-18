@@ -6,7 +6,7 @@
 /*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/17 16:58:32 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/08/17 18:58:07 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@
 class Server
 {
 public:
-	Server(const ServerConfig &config);
+	Server(const ServerConfig &config, int event_fd, epoll_event *event);
 	~Server();
+	int	_getServerFd() const;
 	void run();
 
 private:
@@ -42,6 +43,7 @@ private:
 	int _port;
 	int _server_fd;
 	int _epoll_fd;
+	epoll_event *_event;
 	HttpStatus::Code _status;
 	std::map<int, std::string> _buffer_request;
 	struct epoll_event _events[MAX_EVENTS];
