@@ -36,6 +36,7 @@ bool Server::_acceptClient()
 {
 	sockaddr_in client_addr;
 	socklen_t client_addr_len = sizeof(client_addr);
+	OUTNL("fd no accept " << _server_fd);
 	int client_fd = accept(_server_fd, (sockaddr *)&client_addr, &client_addr_len);
 	if (client_fd == -1)
 		if (!this->_handleAcceptError(errno))
@@ -58,6 +59,7 @@ bool Server::_handleAcceptError(int error_code)
 void Server::_handleConnection(int client_fd)
 {
 	char buffer[BUFFER_SIZE];
+	OUTNL("Entrou no handle connection");
 	while (true)
 	{
 		ssize_t bytes_read = _readFromClient(client_fd, buffer);

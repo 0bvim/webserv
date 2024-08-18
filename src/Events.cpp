@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 16:09:46 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/18 17:22:15 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/18 18:06:13 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ Events::Events(const std::vector<ServerConfig> &servers)
 {
 	this->_epoll_fd = epoll_create(MAX_CONNECTIONS);
 	this->_event = new epoll_event[MAX_CONNECTIONS];
+	memset(this->_event, 0, sizeof(epoll_event) * MAX_CONNECTIONS);
+	this->_event->events = EPOLLIN | EPOLLET;
 	if (this->_epoll_fd == -1)
 		throw std::runtime_error("Failed to create epoll file descriptor");
 	for (std::vector<ServerConfig>::const_iterator it = servers.begin();
@@ -53,8 +55,8 @@ void Events::run()
                     if (!this->_servers[j]->_acceptClient())
                         break;
                 }
-                // else
-                //     this->_servers[j]->_handleConnection(_event[i].data.fd);
+                else
+                    this->_servers[j]->_handleConnection(_event[i].data.fd);
 			}
 		}
 	}
