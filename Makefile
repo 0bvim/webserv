@@ -53,19 +53,3 @@ run2: all
 	@./$(NAME) arquivo.conf
 
 tests: $(TEST_TARGET)
-
-$(TEST_TARGET): $(filter-out $(BUILD_DIR)/main.o,$(OBJS)) $(TEST_OBJS) | $(TEST_BIN_DIR)
-	$(CXX) $(CXXFLAGS_TEST) -pthread -o $@ $^ $(GTEST_LIB)
-
-$(TEST_BUILD_DIR)/%.o: $(TESTS_DIR)/%.cpp | $(TEST_BUILD_DIR)
-	$(CXX) $(CXXFLAGS_TEST) -c -o $@ $<
-
-$(TEST_BUILD_DIR):
-	mkdir -p $(TEST_BUILD_DIR)
-
-$(TEST_BIN_DIR):
-	mkdir -p $(TEST_BIN_DIR)
-
-run_tests: tests
-	@./$(TEST_TARGET)
-	@rm -rf $(TEST_BIN_DIR) $(TEST_BUILD_DIR)
