@@ -1,5 +1,5 @@
 CXX := c++
-CXXFLAGS := -std=c++98 -Wall -Wextra -Werror -Iinclude -g3
+CXXFLAGS := -std=c++11 -Wall -Wextra -Werror -Iinclude -g3
 CXXFLAGS_TEST := -Wall -Wextra -Werror -Iinclude -isystem $(GTEST_DIR)/include
 
 SRC_DIR := src
@@ -9,8 +9,8 @@ TESTS_DIR := tests
 TEST_BUILD_DIR := $(TESTS_DIR)/build
 TEST_BIN_DIR := $(TESTS_DIR)/bin
 
-SRCS := $(wildcard $(SRC_DIR)/*.cpp)
-OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
+SRCS := $(wildcard $(SRC_DIR)/*/*.cpp)
+OBJS := $(patsubst $(SRC_DIR)/%/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
 NAME := $(BIN_DIR)/webserv
 
 TEST_SRCS := $(wildcard $(TESTS_DIR)/*.cpp)
