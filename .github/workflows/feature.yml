@@ -28,7 +28,7 @@ jobs:
       run: |
         make run &
         SERVER_PID=$!
-        sleep 3 # just to certify that test will run...
+        sleep 3
 
     - name: Stop Webserv
-      run: kill -SIGINT $SERVER_PID
+      run: kill -SIGINT $SERVER_PID || true
