@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <sys/epoll.h>
 
 class Configuration;
 
