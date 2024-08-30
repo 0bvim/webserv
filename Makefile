@@ -52,4 +52,5 @@ run: all
 run2: all
 	@./$(NAME) arquivo.conf
 
-tests: $(TEST_TARGET)
+tests:
+	@mkdir -p build && cmake .. && make

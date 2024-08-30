@@ -12,7 +12,7 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 # Add the main application executable
-add_executable(my_web_server src/main.cpp src/Client.cpp src/Config.cpp src/ConfigUtils.cpp src/InitServer.cpp src/Request.cpp src/Response.cpp src/Server.cpp src/ServerUtils.cpp src/utils.cpp)
+add_executable(my_web_server src/main.cpp)
 
 # Specify any dependencies for the main application here
 # target_link_libraries(my_web_server dependency_name)
