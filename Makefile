@@ -5,22 +5,14 @@ CXXFLAGS_TEST := -Wall -Wextra -Werror -Iinclude -isystem $(GTEST_DIR)/include
 SRC_DIR := src
 BUILD_DIR := build
 BIN_DIR := bin
-TESTS_DIR := tests
-TEST_BUILD_DIR := $(TESTS_DIR)/build
-TEST_BIN_DIR := $(TESTS_DIR)/bin
 
-SRCS := $(wildcard $(SRC_DIR)/*/*.cpp)
-OBJS := $(patsubst $(SRC_DIR)/%/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
+SRCS := $(wildcard $(SRC_DIR)/*.cpp)
+SRCS += $(wildcard $(SRC_DIR)/**/*.cpp)
+OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
+OBJS := $(patsubst $(SRC_DIR)/%%/%.cpp, $(BUILD_DIR)/%%/%.o, $(SRCS))
 NAME := $(BIN_DIR)/webserv
 
-TEST_SRCS := $(wildcard $(TESTS_DIR)/*.cpp)
-TEST_OBJS := $(patsubst $(TESTS_DIR)/%.cpp, $(TEST_BUILD_DIR)/%.o, $(TEST_SRCS))
-TEST_TARGET := $(TEST_BIN_DIR)/tests
-
-GTEST_DIR := /usr/src/gtest
-GTEST_LIB := /usr/lib/libgtest.a /usr/lib/libgtest_main.a
-
-.PHONY: all clean fclean re run tests run_tests
+.PHONY: all clean fclean re run run2 tests
 
 all: $(NAME)
 	@echo "Build complete"
@@ -47,7 +39,7 @@ re: fclean all
 	@echo "Rebuilding..."
 
 run: all
-	@./$(NAME) default.conf
+	@./$(NAME) server.conf
 
 run2: all
 	@./$(NAME) arquivo.conf
