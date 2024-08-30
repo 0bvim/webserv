@@ -25,4 +25,10 @@ jobs:
       run: make
 
     - name: Run Code
-      run: make run
+      run: |
+        make run &
+        SERVER_PID=$!
+        sleep 3 # just to certify that test will run...
+
+    - name: Stop Webserv
+      run: kill -SIGINT $SERVER_PID
