@@ -1,0 +1,33 @@
+name: Feature CI
+
+on:
+  push:
+    branches:
+      - 'feature/*'
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  feature-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Clang 12
+      uses: actions/setup-tool@v3
+      with:
+        url: https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang+llvm-12.0.0-linux-x86_64.tar.xz
+        extract: 'clang+llvm-12.0.0-linux-x86_64'
+
+    - name: Configure Clang 12
+      run: |
+        export PATH=$PATH:$PWD/clang+llvm-12.0.0-linux-x86_64/bin
+        clang++ --version
+
+    - name: Compile Webserv
+      run: make
+
+    - name: Run Code
+      run: make run
