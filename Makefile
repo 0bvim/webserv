@@ -1,5 +1,5 @@
 CXX := c++
-CXXFLAGS := -std=c++11 -Wall -Wextra -Werror -Iinclude -g3
+CXXFLAGS := -std=c++98 -Wall -Wextra -Werror -Iinclude -g3
 CXXFLAGS_TEST := -Wall -Wextra -Werror -Iinclude -isystem $(GTEST_DIR)/include
 
 SRC_DIR := src

@@ -12,6 +12,7 @@
 #include <sstream>
 #include <fstream>
 #include "Server.hpp"
+#include "../utils/utils.h"
 #include "../Configuration/Configuration.hpp"
 
 Server::Server(const Configuration &config) : events(10)
@@ -30,12 +31,16 @@ void Server::setup()
 
 void Server::createSockets()
 {
-	for (int port : ports)
+	for (size_t i = 0; i < ports.size(); ++i)
 	{
+		int port = ports[i];
 		int server_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 		if (server_fd < 0)
 		{
-			throw std::runtime_error("Socket creation failed for port " + std::to_string(port));
+			std::ostringstream oss;
+			oss << port;
+			std::string return_port = oss.str();
+			throw std::runtime_error("Socket creation failed for port " + return_port);
 		}
 		server_fds.push_back(server_fd);
 	}
@@ -55,12 +60,18 @@ void Server::bindSockets()
 
 		if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
 		{
-			throw std::runtime_error("Bind failed for port " + std::to_string(port));
+			std::ostringstream oss;
+			oss << port;
+			std::string return_port = oss.str();
+			throw std::runtime_error("Bind failed for port " + return_port);
 		}
 
 		if (listen(server_fd, 10) < 0)
 		{
-			throw std::runtime_error("Listen failed for port " + std::to_string(port));
+			std::ostringstream oss;
+			oss << port;
+			std::string return_port = oss.str();
+			throw std::runtime_error("Listen failed for port " + return_port);
 		}
 
 		std::cout << "Server listening on " << host << ":" << port << std::endl;
@@ -75,8 +86,9 @@ void Server::setupEventLoop()
 		throw std::runtime_error("Epoll creation failed");
 	}
 
-	for (int server_fd : server_fds)
+	for (size_t i = 0; i < server_fds.size(); ++i)
 	{
+		int server_fd = server_fds[i];
 		struct epoll_event event;
 		event.events = EPOLLIN;
 		event.data.fd = server_fd;
@@ -102,8 +114,9 @@ void Server::run()
 			int event_fd = events[i].data.fd;
 
 			bool is_server_fd = false;
-			for (int server_fd : server_fds)
+			for (size_t i = 0; i < server_fds.size(); ++i)
 			{
+				int server_fd = server_fds[i];
 				if (event_fd == server_fd)
 				{
 					is_server_fd = true;
@@ -156,7 +169,7 @@ void Server::handleRequest(int client_fd)
 
 	if (bytes_read <= 0)
 	{
-		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, nullptr);
+		epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
 		close(client_fd);
 		std::cout << "Client disconnected: " << client_fd << std::endl;
 		return;
@@ -200,7 +213,7 @@ void Server::serveStaticContent(int client_fd, const std::string &file_path)
 	}
 
 	std::string response = "HTTP/1.1 200 OK\r\n";
-	response += "Content-Length: " + std::to_string(content.size()) + "\r\n";
+	response += "Content-Length: " + intToString(content.size()) + "\r\n";
 	response += "Content-Type: text/html\r\n";
 	response += "\r\n";
 	response += content;
@@ -215,20 +228,20 @@ void Server::sendResponse(int client_fd, const std::string &response)
 
 void Server::throwError(int client_fd, int error_code, const std::string &message)
 {
-	std::string response = "HTTP/1.1 " + std::to_string(error_code) + " " + message + "\r\n";
-	response += "Content-Length: " + std::to_string(message.size()) + "\r\n";
+	std::string response = "HTTP/1.1 " + intToString(error_code) + " " + message + "\r\n";
+	response += "Content-Length: " + intToString(message.size()) + "\r\n";
 	response += "Content-Type: text/plain\r\n";
 	response += "\r\n";
 	response += message;
 
 	sendResponse(client_fd, response);
-	epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, nullptr);
+	epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
 	close(client_fd);
 }
 
 std::string Server::readFile(const std::string &file_path)
 {
-	std::ifstream file(file_path, std::ios::in | std::ios::binary);
+	std::ifstream file(file_path.c_str(), (std::ios::in | std::ios::binary));
 	if (!file)
 	{
 		return "";

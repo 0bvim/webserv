@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdlib.h>
 
 Configuration::Configuration() : host("127.0.0.1")
 {
@@ -10,7 +11,7 @@ Configuration::Configuration() : host("127.0.0.1")
 
 bool Configuration::loadFromFile(const std::string &filename)
 {
-	std::ifstream file(filename);
+	std::ifstream file(filename.c_str());
 	if (!file.is_open())
 	{
 		std::cerr << "Could not open configuration file: " << filename << std::endl;
@@ -39,7 +40,7 @@ void Configuration::parseLine(const std::string &line)
 
 	if (key == "port")
 	{
-		ports.push_back(std::stoi(value));
+		ports.push_back(atoi(value.c_str()));
 	}
 	else if (key == "host")
 	{
