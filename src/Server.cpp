@@ -49,6 +49,7 @@ bool Server::_acceptClient()
 		perror("epoll_ctl failed");
 		close(client_fd);
 	}
+	_clients.push_back(client_fd);
 	return true;
 }
 
@@ -98,6 +99,11 @@ void Server::_setSocketNonBlocking(int fd)
 	int flags = 1;
 	if (ioctl(fd, FIONBIO, &flags) < 0)
 		throw std::runtime_error("Failed to set socket non-blocking");
+}
+
+bool Server::_isClientConnected(int fd)
+{
+	return std::find(_clients.begin(), _clients.end(), fd) != _clients.end();
 }
 
 int	Server::_getServerFd() const

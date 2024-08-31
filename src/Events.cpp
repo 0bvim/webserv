@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 16:09:46 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/31 17:08:18 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/31 17:50:13 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,17 +48,24 @@ void Events::run()
 			throw std::runtime_error("Failed to wait on epoll");
 		for (int i = 0; i < event_count; i++)
 		{
-            for(int j = 0, size = this->_servers.size(); j < size; j++)
+			bool found = false;
+			for(int j = 0, size = this->_servers.size(); j < size; j++)
 			{
 				int server_fd = this->_servers[j]->_getServerFd();
-                if (_event[i].data.fd == server_fd)
-                {
-                    if (this->_servers[j]->_acceptClient())
-                        break;
-                }
-                else
-                    this->_servers[j]->_handleConnection(_event[i].data.fd);
+				if (_event[i].data.fd == server_fd && this->_servers[j]->_acceptClient())
+				{
+					found = true;
+					break;
+				}
+				else if (this->_servers[j]->_isClientConnected(_event[i].data.fd))
+				{
+					this->_servers[j]->_handleConnection(_event[i].data.fd);
+					found = true;
+					break;
+				}
 			}
+			if (found)
+				break;
 		}
 	}
 }
