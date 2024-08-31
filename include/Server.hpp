@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/18 17:31:41 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/31 16:43:19 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ private:
 	ssize_t _readFromClient(int fd, char *buff);
 	bool _handleAcceptError(int error_code);
 	void _initServerAddress(sockaddr_in &server_add);
+	void _setSocketNonBlocking(int fd);
 
 	std::string _address;
 	int _port;

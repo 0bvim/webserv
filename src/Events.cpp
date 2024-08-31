@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 16:09:46 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/18 18:06:13 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/31 17:08:18 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,10 @@ void Events::run()
 		{
             for(int j = 0, size = this->_servers.size(); j < size; j++)
 			{
-                if (_event[i].data.fd == this->_servers[j]->_getServerFd())
+				int server_fd = this->_servers[j]->_getServerFd();
+                if (_event[i].data.fd == server_fd)
                 {
-                    if (!this->_servers[j]->_acceptClient())
+                    if (this->_servers[j]->_acceptClient())
                         break;
                 }
                 else
@@ -62,7 +63,8 @@ void Events::run()
 	}
 }
 
-void Events::handleEvents()
+
+void Events::_handleEvents()
 {
 
 
