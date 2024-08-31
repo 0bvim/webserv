@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/18 17:31:41 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/31 17:44:21 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ public:
 	int	_getServerFd() const;
 	bool _acceptClient();
 	void _handleConnection(int client_fd);
+	bool _isClientConnected(int fd);
 	void run();
 
 private:
@@ -37,6 +38,7 @@ private:
 	ssize_t _readFromClient(int fd, char *buff);
 	bool _handleAcceptError(int error_code);
 	void _initServerAddress(sockaddr_in &server_add);
+	void _setSocketNonBlocking(int fd);
 
 	std::string _address;
 	int _port;
@@ -47,6 +49,7 @@ private:
 	std::map<int, std::string> _buffer_request;
 	struct epoll_event _events[MAX_EVENTS];
 	const ServerConfig &_config;
+	std::vector<int> _clients;
 };
 
 #endif

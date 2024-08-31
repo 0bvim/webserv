@@ -41,6 +41,15 @@ bool Server::_acceptClient()
 	if (client_fd == -1)
 		if (!this->_handleAcceptError(errno))
 			return false;
+	this->_setSocketNonBlocking(client_fd);
+	(*_event).events = EPOLLIN | EPOLLET;
+	(*_event).data.fd = client_fd;
+	if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_ADD, client_fd, _event) == -1)
+	{
+		perror("epoll_ctl failed");
+		close(client_fd);
+	}
+	_clients.push_back(client_fd);
 	return true;
 }
 
@@ -83,6 +92,18 @@ void Server::_handleConnection(int client_fd)
 			}
 		}
 	}
+}
+
+void Server::_setSocketNonBlocking(int fd)
+{
+	int flags = 1;
+	if (ioctl(fd, FIONBIO, &flags) < 0)
+		throw std::runtime_error("Failed to set socket non-blocking");
+}
+
+bool Server::_isClientConnected(int fd)
+{
+	return std::find(_clients.begin(), _clients.end(), fd) != _clients.end();
 }
 
 int	Server::_getServerFd() const

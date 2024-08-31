@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/18 17:31:40 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/08/31 16:38:59 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/epoll.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 // C++ LIBS
