@@ -1,5 +1,6 @@
 #include "../include/Server.hpp"
 #include "../include/Config.hpp"
+#include "../include/Events.hpp"
 
 int main(int ac, char **av)
 {
@@ -9,8 +10,8 @@ int main(int ac, char **av)
 	try
 	{
 		Config config(file);
-		Server server(config);
-		server.run();
+		Events events(config.getServers());
+		events.run();
 	}
 	catch (std::exception &e)
 	{

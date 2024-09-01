@@ -74,8 +74,11 @@ void Config::parseServerBlock(const std::vector<std::string> &lines, size_t &ind
 			server.server_name = trimmedLine.substr(12).erase(trimmedLine.size() - 13);
 		else if (trimmedLine.find("listen") == 0)
 		{
+			std::string  str;
 			std::istringstream iss(trimmedLine.substr(7).erase(trimmedLine.size() - 8));
-			iss >> server.listen;
+			iss >> str;
+			server.address = str.substr(0, str.find(":"));
+			server.port = atoi(str.substr(str.find(":") + 1).c_str());
 		}
 		else if (trimmedLine.find("client_max_body_size") == 0)
 		{
@@ -191,7 +194,8 @@ void Config::printServers() const
 	{
 		const ServerConfig &server = servers[i];
 		std::cout << "Server Name: " << server.server_name << "\n";
-		std::cout << "Listen: " << server.listen << "\n";
+		std::cout << "Address: " << server.address << "\n";
+		std::cout << "Port: " << server.port << "\n";
 		std::cout << "Client Max Body Size: " << server.client_max_body_size << "\n";
 
 		for (std::map<int, std::string>::const_iterator it = server.error_pages.begin(); it != server.error_pages.end(); ++it)

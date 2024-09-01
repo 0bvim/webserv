@@ -3,24 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:35 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/11 02:11:25 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/08/17 16:21:49 bbbnivicius      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/Server.hpp"
 
-Server::Server(Config &config) : _config(config)
+Server::Server(const ServerConfig &config, int epoll_fd, epoll_event *event) : _config(config)
 {
 	this->_status = HttpStatus::ZERO;
-	this->_address = config.getServerAddress();
-	this->_port = config.getServerPort();
+	this->_address = config.address;
+	this->_port = config.port;
 	this->_server_fd = -1;
-	this->_epoll_fd = -1;
+	this->_epoll_fd = epoll_fd;
+	this->_event = event;
 	this->_initServer();
-	OUTNL(MAGENTA("Read to connect in: " << _address + ":" << _port));
+	OUTNL(MAGENTA("Ready to connect in: " << _address + ":" << _port));
 }
 
 Server::~Server()
@@ -33,44 +34,23 @@ Server::~Server()
 
 bool Server::_acceptClient()
 {
-	while (true)
+	sockaddr_in client_addr;
+	socklen_t client_addr_len = sizeof(client_addr);
+	OUTNL("fd no accept " << _server_fd);
+	int client_fd = accept(_server_fd, (sockaddr *)&client_addr, &client_addr_len);
+	if (client_fd == -1)
+		if (!this->_handleAcceptError(errno))
+			return false;
+	this->_setSocketNonBlocking(client_fd);
+	(*_event).events = EPOLLIN | EPOLLET;
+	(*_event).data.fd = client_fd;
+	if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_ADD, client_fd, _event) == -1)
 	{
-		sockaddr_in client_addr;
-		socklen_t client_addr_len = sizeof(client_addr);
-		int client_fd = accept(_server_fd, (sockaddr *)&client_addr, &client_addr_len);
-		if (client_fd == -1)
-			if (!this->_handleAcceptError(errno))
-				return false;
-		epoll_event event;
-		memset(&event, 0, sizeof(epoll_event));
-		event.events = EPOLLIN | EPOLLET;
-		event.data.fd = client_fd;
-		if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
-		{
-			std::cerr << "Failed to add client socket to epoll" << std::endl;
-			close(client_fd);
-		}
+		perror("epoll_ctl failed");
+		close(client_fd);
 	}
-}
-
-void Server::run()
-{
-	while (true)
-	{
-		int event_count = epoll_wait(_epoll_fd, _events, MAX_EVENTS, -1);
-		if (event_count == -1)
-			throw std::runtime_error("Failed to wait on epoll");
-		for (int i = 0; i < event_count; i++)
-		{
-			if (_events[i].data.fd == _server_fd)
-			{
-				if (!this->_acceptClient())
-					break;
-			}
-			else
-				this->_handleConnection(_events[i].data.fd);
-		}
-	}
+	_clients.push_back(client_fd);
+	return true;
 }
 
 bool Server::_handleAcceptError(int error_code)
@@ -88,6 +68,7 @@ bool Server::_handleAcceptError(int error_code)
 void Server::_handleConnection(int client_fd)
 {
 	char buffer[BUFFER_SIZE];
+	OUTNL("Entrou no handle connection");
 	while (true)
 	{
 		ssize_t bytes_read = _readFromClient(client_fd, buffer);
@@ -111,4 +92,21 @@ void Server::_handleConnection(int client_fd)
 			}
 		}
 	}
+}
+
+void Server::_setSocketNonBlocking(int fd)
+{
+	int flags = 1;
+	if (ioctl(fd, FIONBIO, &flags) < 0)
+		throw std::runtime_error("Failed to set socket non-blocking");
+}
+
+bool Server::_isClientConnected(int fd)
+{
+	return std::find(_clients.begin(), _clients.end(), fd) != _clients.end();
+}
+
+int	Server::_getServerFd() const
+{
+	return this->_server_fd;
 }

@@ -89,6 +89,7 @@ void handle_connections(int server_fd)
 		{
 			if (events[i].data.fd == server_fd)
 			{
+				std::cout << "Incoming connection" << std::endl;
 				struct sockaddr_in client_address;
 				socklen_t client_len = sizeof(client_address);
 				int client_fd = accept(server_fd, (struct sockaddr *)&client_address, &client_len);
@@ -112,6 +113,7 @@ void handle_connections(int server_fd)
 			}
 			else
 			{
+				std::cout << "Incoming data" << std::endl;
 				char buffer[1024] = {0};
 				int client_fd = events[i].data.fd;
 				int bytes_read = read(client_fd, buffer, sizeof(buffer));
