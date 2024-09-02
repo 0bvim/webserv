@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:40:41 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/31 17:44:21 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/01 16:26:31 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Config.hpp"
+#include "Client.hpp"
 
 class Server
 {
@@ -49,7 +50,7 @@ private:
 	std::map<int, std::string> _buffer_request;
 	struct epoll_event _events[MAX_EVENTS];
 	const ServerConfig &_config;
-	std::vector<int> _clients;
+	std::map<int, Client *> _clients;
 };
 
 #endif

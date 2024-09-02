@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vde-frei <vde-frei@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 14:40:02 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/07/28 22:34:05 by vde-frei         ###   ########.fr       */
+/*   Updated: 2024/09/01 16:30:10 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,16 @@
 class Client
 {
 public:
-	Client();
+	Client(int serverSocket);
 	~Client();
-	void connectToServer(const int serverSocket);
-	int getClientSocket(void) const;
+	int _getClientSocket() const;
+	std::string _getBuffer();
+	void _addToBuffer(const std::string &str);
 
 private:
 	int _clientSocket;
 	struct sockaddr_in _address;
-
-	void _createClientSocket(void);
+	std::string _buffer;
 };
 
 #endif
