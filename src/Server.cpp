@@ -96,18 +96,18 @@ bool Server::_handleAcceptError(int error_code)
 
 void Server::_handleConnection(int client_fd)
 {
-	char buffer[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE + 1];
 
 	while (true)
 	{
 		ssize_t bytes_read = _readFromClient(client_fd, buffer);
-		if (bytes_read <= 0)
-			break;
-		else
+		if (bytes_read > 0)
 		{
 			buffer[bytes_read] = '\0';
 			this->_clients[client_fd]->_addToBuffer(buffer);
 		}
+		else
+			break;
 	}
 }
 
