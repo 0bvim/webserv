@@ -28,7 +28,7 @@ Server::~Server()
 {
 	if (_server_fd != -1)
 		close(_server_fd);
-	for (std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 	{
 		delete it->second;
 		_clients.erase(it);
@@ -94,21 +94,28 @@ bool Server::_handleAcceptError(int error_code)
 // 	}
 // }
 
+bool endsWithCRLF(const std::string &str)
+{
+	const std::string crlf = "\r\n\r\n";
+	if (str.length() >= crlf.length())
+	{
+		return str.substr(str.length() - crlf.length()) == crlf;
+	}
+	return false;
+}
+
 void Server::_handleConnection(int client_fd)
 {
 	char buffer[BUFFER_SIZE + 1];
 
-	while (true)
+	ssize_t bytes_read = _readFromClient(client_fd, buffer);
+	if (bytes_read > 0)
 	{
-		ssize_t bytes_read = _readFromClient(client_fd, buffer);
-		if (bytes_read > 0)
-		{
-			buffer[bytes_read] = '\0';
-			this->_clients[client_fd]->_addToBuffer(buffer);
-		}
-		else
-			break;
+		buffer[bytes_read] = '\0';
+		this->_clients[client_fd]->_addToBuffer(buffer);
 	}
+	if (endsWithCRLF(this->_clients[client_fd]->_getBuffer()))
+		close(client_fd);
 }
 
 void Server::_setSocketNonBlocking(int fd)
@@ -123,7 +130,7 @@ bool Server::_isClientConnected(int fd)
 	return this->_clients.find(fd) != this->_clients.end();
 }
 
-int	Server::_getServerFd() const
+int Server::_getServerFd() const
 {
 	return this->_server_fd;
 }
