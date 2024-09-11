@@ -6,7 +6,7 @@
 /*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 14:46:10 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/10 21:22:09 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/09/10 22:07:36 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 Client::Client(int serverSocket)
 {
-	this->eof = false;
 	memset(&this->_address, 0, sizeof(this->_address));
 
 	socklen_t client_addr_len = sizeof(this->_address);
@@ -43,4 +42,9 @@ std::string Client::_getBuffer()
 void Client::_addToBuffer(const std::string &str)
 {
 	this->_buffer += str;
+}
+
+void Client::clearBuff()
+{
+	this->_buffer.clear();
 }

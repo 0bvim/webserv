@@ -6,7 +6,7 @@
 /*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 14:40:02 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/10 21:22:04 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/09/10 22:06:58 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ public:
 	int _getClientSocket() const;
 	std::string _getBuffer();
 	void _addToBuffer(const std::string &str);
-	bool eof;
+	void clearBuff();
 
 private:
 	int _clientSocket;
