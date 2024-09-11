@@ -34,12 +34,7 @@ void Server::_printOnClient(int fd, std::string const &str)
 ssize_t Server::_readFromClient(int fd, char *buff)
 {
 	ssize_t bytes_read = read(fd, buff, BUFFER_SIZE - 1);
-	if (bytes_read == -1)
-	{
-		std::cerr << "Read error: " << strerror(errno) << std::endl;
-		close(fd);
-	}
-	else if (bytes_read == 0)
+	if (bytes_read == 0)
 		close(fd);
 	return (bytes_read);
 }

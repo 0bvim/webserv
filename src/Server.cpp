@@ -65,35 +65,6 @@ bool Server::_handleAcceptError(int error_code)
 	return true;
 }
 
-// void Server::_handleConnection(int client_fd)
-// {
-// 	char buffer[BUFFER_SIZE];
-
-// 	while (true)
-// 	{
-// 		ssize_t bytes_read = _readFromClient(client_fd, buffer);
-// 		if (bytes_read <= 0)
-// 			break;
-// 		else
-// 		{
-// 			buffer[bytes_read] = '\0';
-// 			_fillBuffer(client_fd, buffer);
-// 			if (this->_status == HttpStatus::BAD_REQUEST)
-// 			{
-// 				this->_printOnClient(client_fd, "Bad Request\n");
-// 				close(client_fd);
-// 			}
-// 			else if (_checkEndMessage(client_fd))
-// 			{
-// 				Request request(this->_buffer_request[client_fd].c_str());
-// 				// request.printRequest();
-// 				Response response(request, this->_config);
-// 				this->_printOnClient(client_fd, response.getResponse());
-// 			}
-// 		}
-// 	}
-// }
-
 bool endsWithCRLF(const std::string &str)
 {
 	const std::string crlf = "\r\n\r\n";
@@ -113,9 +84,18 @@ void Server::_handleConnection(int client_fd)
 	{
 		buffer[bytes_read] = '\0';
 		this->_clients[client_fd]->_addToBuffer(buffer);
+		OUTNL(this->_clients[client_fd]->_getBuffer());
 	}
 	if (endsWithCRLF(this->_clients[client_fd]->_getBuffer()))
-		close(client_fd);
+	{
+		Request req(this->_clients[client_fd]->_getBuffer().c_str());
+		Response resp(req, this->_config);
+		int flags = MSG_NOSIGNAL |  MSG_DONTWAIT | MSG_MORE;
+		size_t size = resp.getResponse().size();
+		send(client_fd, resp.getResponse().c_str(), size, flags);
+		this->_clients[client_fd]->clearBuff();
+
+	}
 }
 
 void Server::_setSocketNonBlocking(int fd)
