@@ -14,13 +14,11 @@
 
 Response::Response(Request &request, const ServerConfig &config) : _request(request), _config(config)
 {
-	// o request será usado para gerar o response. está (void) para compilar
-	(void)this->_request;
-	this->_identifyCGI();
-	if (this->_checkErrors())
-		return;
-	if (this->_response.isCGI)
-		this->_executeCgi();
+	// this->_identifyCGI();
+	// if (this->_checkErrors())
+	// 	return;
+	// if (this->_response.isCGI)
+	// 	this->_executeCgi();
 	this->_generateStatusLine();
 	this->_generateHeaders();
 	std::string path("/web/index.html");
@@ -38,13 +36,13 @@ std::string Response::getResponse() const
 
 void Response::_generateStatusLine()
 {
-	// mocking the status line
+	// TODO: mocking the status line
 	this->_response.statusLine = "HTTP/1.1 200 OK";
 }
 
 void Response::_generateHeaders()
 {
-	// mocking the headers
+	// TODO: mocking the headers
 	this->_response.headers["Content-Type"] = "text/html";
 }
 
@@ -65,7 +63,7 @@ void Response::_generateBody(std::string &path)
 	}
 	else
 	{
-		// [TODO] mensagem de arquivo não encontrado
+		// TODO: mensagem de arquivo não encontrado
 	}
 }
 
