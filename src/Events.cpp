@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Events.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 16:09:46 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/31 17:50:13 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/10 21:28:10 by nivicius         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,4 @@ void Events::run()
 				break;
 		}
 	}
-}
-
-
-void Events::_handleEvents()
-{
-
-
 }
