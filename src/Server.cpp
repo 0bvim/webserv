@@ -28,20 +28,20 @@ Server::~Server()
 {
 	if (_server_fd != -1)
 		close(_server_fd);
-	if (_epoll_fd != -1)
-		close(_epoll_fd);
+	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+	{
+		delete it->second;
+		_clients.erase(it);
+		break;
+	}
 }
 
 bool Server::_acceptClient()
 {
-	sockaddr_in client_addr;
-	socklen_t client_addr_len = sizeof(client_addr);
-	OUTNL("fd no accept " << _server_fd);
-	int client_fd = accept(_server_fd, (sockaddr *)&client_addr, &client_addr_len);
-	if (client_fd == -1)
-		if (!this->_handleAcceptError(errno))
-			return false;
-	this->_setSocketNonBlocking(client_fd);
+	Client *client = new Client(this->_server_fd);
+
+	int client_fd = client->_getClientSocket();
+
 	(*_event).events = EPOLLIN | EPOLLET;
 	(*_event).data.fd = client_fd;
 	if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_ADD, client_fd, _event) == -1)
@@ -49,7 +49,7 @@ bool Server::_acceptClient()
 		perror("epoll_ctl failed");
 		close(client_fd);
 	}
-	_clients.push_back(client_fd);
+	this->_clients[client_fd] = client;
 	return true;
 }
 
@@ -65,32 +65,36 @@ bool Server::_handleAcceptError(int error_code)
 	return true;
 }
 
+bool endsWithCRLF(const std::string &str)
+{
+	const std::string crlf = "\r\n\r\n";
+	if (str.length() >= crlf.length())
+	{
+		return str.substr(str.length() - crlf.length()) == crlf;
+	}
+	return false;
+}
+
 void Server::_handleConnection(int client_fd)
 {
-	char buffer[BUFFER_SIZE];
-	OUTNL("Entrou no handle connection");
-	while (true)
+	char buffer[BUFFER_SIZE + 1];
+
+	ssize_t bytes_read = _readFromClient(client_fd, buffer);
+	if (bytes_read > 0)
 	{
-		ssize_t bytes_read = _readFromClient(client_fd, buffer);
-		if (bytes_read <= 0)
-			break;
-		else
-		{
-			buffer[bytes_read] = '\0';
-			_fillBuffer(client_fd, buffer);
-			if (this->_status == HttpStatus::BAD_REQUEST)
-			{
-				this->_printOnClient(client_fd, "Bad Request\n");
-				close(client_fd);
-			}
-			else if (_checkEndMessage(client_fd))
-			{
-				Request request(this->_buffer_request[client_fd].c_str());
-				// request.printRequest();
-				Response response(request, this->_config);
-				this->_printOnClient(client_fd, response.getResponse());
-			}
-		}
+		buffer[bytes_read] = '\0';
+		this->_clients[client_fd]->_addToBuffer(buffer);
+		OUTNL(this->_clients[client_fd]->_getBuffer());
+	}
+	if (endsWithCRLF(this->_clients[client_fd]->_getBuffer()))
+	{
+		Request req(this->_clients[client_fd]->_getBuffer().c_str());
+		Response resp(req, this->_config);
+		int flags = MSG_NOSIGNAL |  MSG_DONTWAIT | MSG_MORE;
+		size_t size = resp.getResponse().size();
+		send(client_fd, resp.getResponse().c_str(), size, flags);
+		this->_clients[client_fd]->clearBuff();
+
 	}
 }
 
@@ -103,10 +107,10 @@ void Server::_setSocketNonBlocking(int fd)
 
 bool Server::_isClientConnected(int fd)
 {
-	return std::find(_clients.begin(), _clients.end(), fd) != _clients.end();
+	return this->_clients.find(fd) != this->_clients.end();
 }
 
-int	Server::_getServerFd() const
+int Server::_getServerFd() const
 {
 	return this->_server_fd;
 }
