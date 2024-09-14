@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 14:40:02 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/10 22:06:58 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/09/14 15:00:06 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ public:
 	Client(int serverSocket);
 	~Client();
 	int _getClientSocket() const;
-	std::string _getBuffer();
+	std::string & _getBuffer();
 	void _addToBuffer(const std::string &str);
 	void clearBuff();
 

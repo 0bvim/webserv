@@ -6,13 +6,13 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:29:18 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/04 17:59:34 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/14 14:56:42 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-Request::Request(const char *str) : _str(str)
+Request::Request(std::string &str) : _str(str)
 {
 	this->_parseHTTPRequest();
 }
