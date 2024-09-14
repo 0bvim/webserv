@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/17 19:02:50 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/09/14 16:53:33 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ namespace HttpStatus
 	enum Code
 	{
 		ZERO,
+		CONTINUE = 100,
 		OK = 200,
 		CREATED = 201,
 		NO_CONTENT = 204,
@@ -60,12 +61,14 @@ private:
 	const ServerConfig &_config;
 	t_response _response;
 
+	void	_generateFullURI();
 	void _generateStatusLine();
 	void _generateHeaders();
 	void _generateBody(std::string &path);
 	std::string _generateResponse() const;
 	void _identifyCGI();
 	void _executeCgi();
+	std::string _location;
 
 	bool _checkErrors();
 	void _error405();

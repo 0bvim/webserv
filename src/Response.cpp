@@ -14,14 +14,14 @@
 
 Response::Response(Request &request, const ServerConfig &config) : _request(request), _config(config)
 {
-	// this->_identifyCGI();
-	// if (this->_checkErrors())
-	// 	return;
-	// if (this->_response.isCGI)
-	// 	this->_executeCgi();
+	if (this->_checkErrors())
+		return;
+	this->_identifyCGI();
+	if (this->_response.isCGI)
+		this->_executeCgi();
 	this->_generateStatusLine();
 	this->_generateHeaders();
-	std::string path("/web/index.html");
+	std::string path("web/index.html");
 	this->_generateBody(path);
 }
 
@@ -85,6 +85,7 @@ bool Response::_checkErrors()
 {
 	if (this->_request.getRequest().method == OTHER)
 		this->_error405();
+	// TODO: implement other errors
 	else
 		return false;
 	return true;
@@ -119,6 +120,7 @@ void Response::_identifyCGI()
 			{
 				if (request.uri.find(server.locations[j].cgi[k].extension) != std::string::npos)
 				{
+					this->_location = server.locations[j].root;
 					this->_response.isCGI = true;
 					return;
 				}
@@ -132,9 +134,9 @@ void Response::_executeCgi()
 {
 	pid_t pid = fork();
 	std::string script_path = this->_request.getRequest().uri;
+	script_path = this->_location.substr(1) + script_path;
 	int fd;
-	
-	
+
     if (pid < 0) {
         perror("Fork failed");
         return;

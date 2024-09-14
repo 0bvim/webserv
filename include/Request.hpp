@@ -33,14 +33,14 @@ typedef struct s_request
 class Request
 {
 public:
-	Request(const char *str);
+	Request(std::string & str);
 	~Request();
 
 	t_request getRequest() const;
 	void printRequest() const;
 
 private:
-	const char *_str;
+	std::string & _str;
 	t_request _request;
 
 	std::string _trim(const std::string &str);

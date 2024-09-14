@@ -11,7 +11,7 @@ TEST_BIN_DIR := $(TESTS_DIR)/bin
 
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
-NAME := $(BIN_DIR)/webserv
+NAME := webserv
 
 TEST_SRCS := $(wildcard $(TESTS_DIR)/*.cpp)
 TEST_OBJS := $(patsubst $(TESTS_DIR)/%.cpp, $(TEST_BUILD_DIR)/%.o, $(TEST_SRCS))

@@ -69,9 +69,7 @@ bool endsWithCRLF(const std::string &str)
 {
 	const std::string crlf = "\r\n\r\n";
 	if (str.length() >= crlf.length())
-	{
 		return str.substr(str.length() - crlf.length()) == crlf;
-	}
 	return false;
 }
 
@@ -84,17 +82,15 @@ void Server::_handleConnection(int client_fd)
 	{
 		buffer[bytes_read] = '\0';
 		this->_clients[client_fd]->_addToBuffer(buffer);
-		OUTNL(this->_clients[client_fd]->_getBuffer());
 	}
 	if (endsWithCRLF(this->_clients[client_fd]->_getBuffer()))
 	{
-		Request req(this->_clients[client_fd]->_getBuffer().c_str());
+		Request req(this->_clients[client_fd]->_getBuffer());
 		Response resp(req, this->_config);
 		int flags = MSG_NOSIGNAL |  MSG_DONTWAIT | MSG_MORE;
 		size_t size = resp.getResponse().size();
 		send(client_fd, resp.getResponse().c_str(), size, flags);
 		this->_clients[client_fd]->clearBuff();
-
 	}
 }
 
