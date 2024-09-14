@@ -74,4 +74,7 @@ private:
 	void _error405();
 };
 
+// utils
+bool  endsWith(const std::string& str, const std::string & suffix);
+
 #endif

@@ -132,38 +132,49 @@ void Response::_identifyCGI()
 
 void Response::_executeCgi()
 {
-	pid_t pid = fork();
-	std::string script_path = this->_request.getRequest().uri;
-	script_path = this->_location.substr(1) + script_path;
-	int fd;
+  std::string script_path = this->_request.getRequest().uri;
+  if (endsWith(script_path, "py")) // TODO: remove outnl and add function to validade if have interpreter installed
+      OUTNL("Are python");
+  else if (endsWith(script_path, "go")) // TODO: remove outnl and add function to validade if have interpreter installed
+      OUTNL("Are go");
+  else if (endsWith(script_path, "php")) // TODO: remove outnl and add function to validade if have interpreter installed
+      OUTNL("Are php");
+  else
+      OUTNL("Not a valid CGI");
 
-    if (pid < 0) {
-        perror("Fork failed");
-        return;
-    }
+  //start to check extension
+  //check if interpreter exists to execute the extension
+  pid_t pid = fork();
+  script_path = this->_location.substr(1) + script_path;
+  int fd;
 
-    if (pid == 0) {
-        // Set up the environment variables (if needed)
-        char *env[] = { NULL };
+  if (pid < 0) {
+    perror("Fork failed");
+    return;
+  }
 
-        // Redirect stdout to the client socket
-		fd = open("temp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        dup2(fd, STDOUT_FILENO);
+  if (pid == 0) {
+    // Set up the environment variables (if needed)
+    char *env[] = { NULL };
 
-        // Execute the CGI script
-		char *args[] = { const_cast<char*>("/usr/bin/python3"), const_cast<char*>(script_path.c_str()), NULL };
-		execve(const_cast<char*>("/usr/bin/python3"), args, env);
+    // Redirect stdout to the client socket
+    fd = open("temp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    dup2(fd, STDOUT_FILENO);
 
-        // If execve fails
-        perror("execve failed");
-        close(fd);
-        exit(1);
-    } else {
-        // Parent process
-        // Wait for the child process to finish
-        waitpid(pid, NULL, 0);
-		std::string path("temp");
-		this->_generateBody(path);
-		std::remove("temp");
-    }
+    // Execute the CGI script
+    char *args[] = { const_cast<char*>("/usr/bin/python3"), const_cast<char*>(script_path.c_str()), NULL };
+    execve(const_cast<char*>("/usr/bin/python3"), args, env);
+
+    // If execve fails
+    perror("execve failed");
+    close(fd);
+    exit(1);
+  } else {
+    // Parent process
+    // Wait for the child process to finish
+    waitpid(pid, NULL, 0);
+    std::string path("temp");
+    this->_generateBody(path);
+    std::remove("temp");
+  }
 }
