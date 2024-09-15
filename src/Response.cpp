@@ -14,6 +14,7 @@
 
 Response::Response(Request &request, const ServerConfig &config) : _request(request), _config(config)
 {
+	this->_determineLocation();
 	if (this->_checkErrors())
 		return;
 	this->_identifyCGI();
@@ -23,6 +24,21 @@ Response::Response(Request &request, const ServerConfig &config) : _request(requ
 	this->_generateHeaders();
 	std::string path("web/index.html");
 	this->_generateBody(path);
+}
+
+void Response::_determineLocation()
+{
+	t_request request = this->_request.getRequest();
+	ServerConfig server = this->_config;
+	for (size_t j = 0; j < server.locations.size(); j++)
+	{
+		if (request.uri.find(server.locations[j].path) != std::string::npos)
+		{
+			this->_locationConfig = &server.locations[j];
+			return;
+		}
+	}
+	this->_locationConfig = NULL;
 }
 
 Response::~Response()
