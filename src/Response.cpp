@@ -128,6 +128,7 @@ bool Response::_checkError400()
 		return true;
 	if (request.method == POST && request.headers["Content-Type"] == "")
 		return true;
+  return false;
 }
 
 // TODO: fix this function, verify where need to return true or false
