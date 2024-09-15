@@ -60,7 +60,7 @@ void Request::_getMethod(const std::string &str)
 
 void Request::_getHTTPVersion(const std::string &str)
 {
-	std::string::size_type pos = str.find('HTTP/');
+	std::string::size_type pos = str.find("HTTP/");
 	if (pos != std::string::npos)
 		this->_request.HTTPVersion = str.substr(pos + 5);
 	else
