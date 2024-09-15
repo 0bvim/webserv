@@ -97,21 +97,19 @@ std::string Response::_generateResponse() const
 	return response;
 }
 
+// TODO: implement other errors
 bool Response::_checkErrors()
 {
 	if (this->_request.getRequest().HTTPVersion == "")
 		this->_response.statusLine = "HTTP/1.1 400 Bad Request";
-
 	if (this->_request.getRequest().method == OTHER)
-		this->_error405();
-	// TODO: implement other errors
+    this->_error405();
 	else
 		return false;
 	return true;
 }
 bool Response::_checkError400()
 {
-	const ServerConfig & server = this->_config;
 	t_request request = this->_request.getRequest();
 
 	if (request.HTTPVersion == "")
@@ -132,6 +130,7 @@ bool Response::_checkError400()
 		return true;
 }
 
+// TODO: fix this function, verify where need to return true or false
 bool Response::_error405()
 {
 	const ServerConfig & server = this->_config;
@@ -146,7 +145,9 @@ bool Response::_error405()
 			std::string path("/web/405.html");
 			this->_generateBody(path);
 		}
+    return true; // verify if here is true or false
 	}
+  return false; // verify if it's true or false too
 }
 
 void Response::_identifyCGI()
