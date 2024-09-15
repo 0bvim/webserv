@@ -83,6 +83,9 @@ std::string Response::_generateResponse() const
 
 bool Response::_checkErrors()
 {
+	if (this->_request.getRequest().HTTPVersion == "")
+		this->_response.statusLine = "HTTP/1.1 400 Bad Request";
+
 	if (this->_request.getRequest().method == OTHER)
 		this->_error405();
 	// TODO: implement other errors
@@ -90,8 +93,30 @@ bool Response::_checkErrors()
 		return false;
 	return true;
 }
+bool Response::_checkError400()
+{
+	const ServerConfig & server = this->_config;
+	t_request request = this->_request.getRequest();
 
-void Response::_error405()
+	if (request.HTTPVersion == "")
+		return true;
+	if (request.headers["Host"] == "")
+		return true;
+	int content_length = 0;
+	int body_size = 0;
+	if (request.headers.find("Content-Length") != request.headers.end())
+		content_length = atoi(request.headers["Content-Length"].c_str());
+	if (request.headers.find("Body") != request.headers.end())
+		body_size = request.headers["Body"].size();
+	if (content_length != body_size)
+		return true;
+	if (request.method == POST && content_length == 0)
+		return true;
+	if (request.method == POST && request.headers["Content-Type"] == "")
+		return true;
+}
+
+bool Response::_error405()
 {
 	const ServerConfig & server = this->_config;
 	t_request request = this->_request.getRequest();

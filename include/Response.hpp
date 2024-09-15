@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/14 16:53:33 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/15 15:32:59 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,8 @@ private:
 	std::string _location;
 
 	bool _checkErrors();
-	void _error405();
+	bool _checkError400();
+	bool _error405();
 };
 
 // utils
