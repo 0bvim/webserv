@@ -6,13 +6,13 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 18:29:18 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/04 17:59:34 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/15 15:27:06 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-Request::Request(const char *str) : _str(str)
+Request::Request(std::string &str) : _str(str)
 {
 	this->_parseHTTPRequest();
 }
@@ -56,6 +56,15 @@ void Request::_getMethod(const std::string &str)
 	{
 		this->_request.method = OTHER;
 	}
+}
+
+void Request::_getHTTPVersion(const std::string &str)
+{
+	std::string::size_type pos = str.find("HTTP/");
+	if (pos != std::string::npos)
+		this->_request.HTTPVersion = str.substr(pos + 5);
+	else
+		this->_request.HTTPVersion = "";
 }
 
 void Request::_parseHTTPRequest()

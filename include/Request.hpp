@@ -25,26 +25,28 @@ enum RequestMethod
 
 typedef struct s_request
 {
-	RequestMethod method;
-	std::string uri;
-	std::map<std::string, std::string> headers;
+	RequestMethod						method;
+	std::string							HTTPVersion;
+	std::string							uri;
+	std::map<std::string, std::string>	headers;
 } t_request;
 
 class Request
 {
 public:
-	Request(const char *str);
+	Request(std::string & str);
 	~Request();
 
 	t_request getRequest() const;
 	void printRequest() const;
 
 private:
-	const char *_str;
+	std::string & _str;
 	t_request _request;
 
 	std::string _trim(const std::string &str);
 	void _getMethod(const std::string &str);
+	void _getHTTPVersion(const std::string &str);
 	void _parseHTTPRequest();
 };
 

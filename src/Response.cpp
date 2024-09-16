@@ -14,15 +14,31 @@
 
 Response::Response(Request &request, const ServerConfig &config) : _request(request), _config(config)
 {
-	// this->_identifyCGI();
-	// if (this->_checkErrors())
-	// 	return;
-	// if (this->_response.isCGI)
-	// 	this->_executeCgi();
+	this->_determineLocation();
+	if (this->_checkErrors())
+		return;
+	this->_identifyCGI();
+	if (this->_response.isCGI)
+		this->_executeCgi();
 	this->_generateStatusLine();
 	this->_generateHeaders();
-	std::string path("/web/index.html");
+	std::string path("web/index.html");
 	this->_generateBody(path);
+}
+
+void Response::_determineLocation()
+{
+	t_request request = this->_request.getRequest();
+	ServerConfig server = this->_config;
+	for (size_t j = 0; j < server.locations.size(); j++)
+	{
+		if (request.uri.find(server.locations[j].path) != std::string::npos)
+		{
+			this->_locationConfig = &server.locations[j];
+			return;
+		}
+	}
+	this->_locationConfig = NULL;
 }
 
 Response::~Response()
@@ -81,16 +97,42 @@ std::string Response::_generateResponse() const
 	return response;
 }
 
+// TODO: implement other errors
 bool Response::_checkErrors()
 {
+	if (this->_request.getRequest().HTTPVersion == "")
+		this->_response.statusLine = "HTTP/1.1 400 Bad Request";
 	if (this->_request.getRequest().method == OTHER)
-		this->_error405();
+    this->_error405();
 	else
 		return false;
 	return true;
 }
+bool Response::_checkError400()
+{
+	t_request request = this->_request.getRequest();
 
-void Response::_error405()
+	if (request.HTTPVersion == "")
+		return true;
+	if (request.headers["Host"] == "")
+		return true;
+	int content_length = 0;
+	int body_size = 0;
+	if (request.headers.find("Content-Length") != request.headers.end())
+		content_length = atoi(request.headers["Content-Length"].c_str());
+	if (request.headers.find("Body") != request.headers.end())
+		body_size = request.headers["Body"].size();
+	if (content_length != body_size)
+		return true;
+	if (request.method == POST && content_length == 0)
+		return true;
+	if (request.method == POST && request.headers["Content-Type"] == "")
+		return true;
+  return false;
+}
+
+// TODO: fix this function, verify where need to return true or false
+bool Response::_error405()
 {
 	const ServerConfig & server = this->_config;
 	t_request request = this->_request.getRequest();
@@ -104,7 +146,9 @@ void Response::_error405()
 			std::string path("/web/405.html");
 			this->_generateBody(path);
 		}
+    return true; // verify if here is true or false
 	}
+  return false; // verify if it's true or false too
 }
 
 void Response::_identifyCGI()
@@ -119,6 +163,7 @@ void Response::_identifyCGI()
 			{
 				if (request.uri.find(server.locations[j].cgi[k].extension) != std::string::npos)
 				{
+					this->_location = server.locations[j].root;
 					this->_response.isCGI = true;
 					return;
 				}
@@ -130,38 +175,49 @@ void Response::_identifyCGI()
 
 void Response::_executeCgi()
 {
-	pid_t pid = fork();
-	std::string script_path = this->_request.getRequest().uri;
-	int fd;
-	
-	
-    if (pid < 0) {
-        perror("Fork failed");
-        return;
-    }
+  std::string script_path = this->_request.getRequest().uri;
+  if (endsWith(script_path, "py")) // TODO: remove outnl and add function to validade if have interpreter installed
+      OUTNL("Are python");
+  else if (endsWith(script_path, "go")) // TODO: remove outnl and add function to validade if have interpreter installed
+      OUTNL("Are go");
+  else if (endsWith(script_path, "php")) // TODO: remove outnl and add function to validade if have interpreter installed
+      OUTNL("Are php");
+  else
+      OUTNL("Not a valid CGI");
 
-    if (pid == 0) {
-        // Set up the environment variables (if needed)
-        char *env[] = { NULL };
+  //start to check extension
+  //check if interpreter exists to execute the extension
+  pid_t pid = fork();
+  script_path = this->_location.substr(1) + script_path;
+  int fd;
 
-        // Redirect stdout to the client socket
-		fd = open("temp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        dup2(fd, STDOUT_FILENO);
+  if (pid < 0) {
+    perror("Fork failed");
+    return;
+  }
 
-        // Execute the CGI script
-		char *args[] = { const_cast<char*>("/usr/bin/python3"), const_cast<char*>(script_path.c_str()), NULL };
-		execve(const_cast<char*>("/usr/bin/python3"), args, env);
+  if (pid == 0) {
+    // Set up the environment variables (if needed)
+    char *env[] = { NULL };
 
-        // If execve fails
-        perror("execve failed");
-        close(fd);
-        exit(1);
-    } else {
-        // Parent process
-        // Wait for the child process to finish
-        waitpid(pid, NULL, 0);
-		std::string path("temp");
-		this->_generateBody(path);
-		std::remove("temp");
-    }
+    // Redirect stdout to the client socket
+    fd = open("temp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    dup2(fd, STDOUT_FILENO);
+
+    // Execute the CGI script
+    char *args[] = { const_cast<char*>("/usr/bin/python3"), const_cast<char*>(script_path.c_str()), NULL };
+    execve(const_cast<char*>("/usr/bin/python3"), args, env);
+
+    // If execve fails
+    perror("execve failed");
+    close(fd);
+    exit(1);
+  } else {
+    // Parent process
+    // Wait for the child process to finish
+    waitpid(pid, NULL, 0);
+    std::string path("temp");
+    this->_generateBody(path);
+    std::remove("temp");
+  }
 }

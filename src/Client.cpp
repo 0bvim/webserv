@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nivicius <nivicius@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 14:46:10 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/10 22:07:36 by nivicius         ###   ########.fr       */
+/*   Updated: 2024/09/14 15:00:33 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int Client::_getClientSocket() const
 	return this->_clientSocket;
 }
 
-std::string Client::_getBuffer()
+std::string & Client::_getBuffer()
 {
 	return this->_buffer;
 }
