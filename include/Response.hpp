@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/15 15:58:57 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/21 11:36:48 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ typedef struct s_response
 	std::string statusLine;
 	bool		isCGI;
 	std::map<std::string, std::string> headers;
+	std::string fullURI;
 	std::string body;
 } t_response;
 
@@ -74,6 +75,7 @@ private:
 
 	bool _checkErrors();
 	bool _checkError400();
+	bool _checkError404();
 	bool _error405();
 };
 
