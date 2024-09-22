@@ -13,6 +13,10 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
+#define PY_PATH "/usr/bin/python3"
+#define GO_PATH "/usr/local/go/bin"
+#define PHP_PATH "/usr/bin/php"
+
 #include "common.hpp"
 #include "Request.hpp"
 #include "Config.hpp"
@@ -81,5 +85,6 @@ private:
 
 // utils
 bool  endsWith(const std::string& str, const std::string & suffix);
+bool  isInterpreterInstalled(const char *command);
 
 #endif
