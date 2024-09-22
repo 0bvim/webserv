@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/21 10:26:03 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/21 12:23:53 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/22 16:43:29 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ Response::Response(Request &request, const ServerConfig &config) : _request(requ
 	this->_identifyCGI();
 	if (this->_response.isCGI)
 		this->_executeCgi();
+	else
+		this->_generateBody(this->_response.fullURI);
 	this->_generateStatusLine();
 	this->_generateHeaders();
-	std::string path("web/index.html");
-	this->_generateBody(path);
 }
 
 void Response::_determineLocation()
@@ -35,7 +35,7 @@ void Response::_determineLocation()
 		if (request.uri.find(server.locations[j].path) != std::string::npos)
 		{
 			this->_locationConfig = &server.locations[j];
-			this->_response.fullURI = server.locations[j].root + request.uri;
+			this->_response.fullURI = "." + server.locations[j].root + request.uri;
 			return;
 		}
 	}
@@ -71,6 +71,7 @@ void Response::_generateBody(std::string &path)
 		std::string bufferStr;
 		buffer << file.rdbuf();
 		bufferStr = buffer.str();
+		OUTNL(bufferStr);
 		this->_response.body = bufferStr;
 		this->_response.headers["Content-Length"] = itoa(bufferStr.size());
 		this->_response.headers["Content-Type"] = "text/html";
@@ -197,32 +198,35 @@ void Response::_executeCgi()
 
 	if (pid == 0)
 	{
-    std::string executablePath;
-    if (endsWith(script_path, "py"))
-    {
-      if (isInterpreterInstalled("python3"))
-        executablePath = PY_PATH;
-    }
-    else if (endsWith(script_path, "go"))
-    {
-      if (isInterpreterInstalled("go"))
-        executablePath = GO_PATH;
-    }
-    else if (endsWith(script_path, "php"))
-    {
-      if (isInterpreterInstalled("php"))
-        executablePath = PHP_PATH;
-    }
-    else
-      OUTNL("Not a valid CGI");
+		std::string executablePath;
+		if (endsWith(script_path, ".py"))
+		{
+		if (isInterpreterInstalled("python3"))
+			executablePath = PY_PATH;
+		}
+		else if (endsWith(script_path, ".go"))
+		{
+		if (isInterpreterInstalled("go"))
+			executablePath = GO_PATH;
+		}
+		else if (endsWith(script_path, ".php"))
+		{
+		if (isInterpreterInstalled("php"))
+			executablePath = PHP_PATH;
+		}
+		else
+		{
+			OUTNL("Not a valid CGI");
+		}
 
 		// Redirect stdout to the client socket
 		fd = open("temp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		dup2(fd, STDOUT_FILENO);
 
 		// Execute the CGI script
-		char *args[] = {const_cast<char *>(executablePath.c_str()), 
-                    const_cast<char *>(script_path.c_str()), NULL};
+		char *args[] = {const_cast<char *>(executablePath.c_str()),
+					const_cast<char *>(script_path.c_str()), NULL};
+		std::cerr << "Chegou aqui\n";
 		execve(args[0], args, NULL);
 
 		// If execve fails

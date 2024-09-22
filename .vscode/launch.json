@@ -25,6 +25,16 @@
 					"description": "Set Disassembly Flavor to Intel",
 					"text": "-gdb-set disassembly-flavor intel",
 					"ignoreFailures": true
+				},
+				{
+					"description": "Set follow-fork-mode to child",
+					"text": "set follow-fork-mode child",
+					"ignoreFailures": false
+				},
+				{
+					"description": "Set detach-on-fork to off",
+					"text": "set detach-on-fork off",
+					"ignoreFailures": false
 				}
 			]
 		}
