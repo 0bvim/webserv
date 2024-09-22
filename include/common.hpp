@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/08/31 16:38:59 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/21 12:22:35 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 #include <asm-generic/socket.h>
-#include <sys/socket.h>
 #include <fcntl.h>
+#include <sys/socket.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -6,6 +6,10 @@ bool  endsWith(const std::string& str, const std::string & suffix) {
 }
 
 bool  isInterpreterInstalled(const char *command) {
-  (void)command;
-  return false;
+  // User system() to check if the interpreter is installed
+  std::string cmd = command;
+
+  cmd += " --version > /dev/null 2>&1";
+  int success = system(cmd.c_str());
+  return (success == 0);
 }
