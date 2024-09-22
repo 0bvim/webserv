@@ -42,9 +42,7 @@ void Response::_determineLocation()
 	this->_locationConfig = NULL;
 }
 
-Response::~Response()
-{
-}
+Response::~Response() {}
 
 std::string Response::getResponse() const
 {
@@ -109,6 +107,7 @@ bool Response::_checkErrors()
 		return false;
 	return true;
 }
+
 bool Response::_checkError400()
 {
 	t_request request = this->_request.getRequest();
@@ -185,18 +184,7 @@ void Response::_identifyCGI()
 
 void Response::_executeCgi()
 {
-	std::string script_path = this->_request.getRequest().uri;
-	if (endsWith(script_path, "py")) // TODO: remove outnl and add function to validade if have interpreter installed
-		OUTNL("Are python");
-	else if (endsWith(script_path, "go")) // TODO: remove outnl and add function to validade if have interpreter installed
-		OUTNL("Are go");
-	else if (endsWith(script_path, "php")) // TODO: remove outnl and add function to validade if have interpreter installed
-		OUTNL("Are php");
-	else
-		OUTNL("Not a valid CGI");
-
-	// start to check extension
-	// check if interpreter exists to execute the extension
+  std::string script_path = this->_request.getRequest().uri;
 	pid_t pid = fork();
 	script_path = this->_location.substr(1) + script_path;
 	int fd;
@@ -209,16 +197,33 @@ void Response::_executeCgi()
 
 	if (pid == 0)
 	{
-		// Set up the environment variables (if needed)
-		char *env[] = {NULL};
+    std::string executablePath;
+    if (endsWith(script_path, "py"))
+    {
+      if (isInterpreterInstalled("python3"))
+        executablePath = PY_PATH;
+    }
+    else if (endsWith(script_path, "go"))
+    {
+      if (isInterpreterInstalled("go"))
+        executablePath = GO_PATH;
+    }
+    else if (endsWith(script_path, "php"))
+    {
+      if (isInterpreterInstalled("php"))
+        executablePath = PHP_PATH;
+    }
+    else
+      OUTNL("Not a valid CGI");
 
 		// Redirect stdout to the client socket
 		fd = open("temp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		dup2(fd, STDOUT_FILENO);
 
 		// Execute the CGI script
-		char *args[] = {const_cast<char *>("/usr/bin/python3"), const_cast<char *>(script_path.c_str()), NULL};
-		execve(const_cast<char *>("/usr/bin/python3"), args, env);
+		char *args[] = {const_cast<char *>(executablePath.c_str()), 
+                    const_cast<char *>(script_path.c_str()), NULL};
+		execve(args[0], args, NULL);
 
 		// If execve fails
 		perror("execve failed");
