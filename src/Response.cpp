@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/21 10:26:03 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/22 16:43:29 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/22 17:32:22 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,23 @@
 
 Response::Response(Request &request, const ServerConfig &config) : _request(request), _config(config)
 {
+	this->httpStatusMap[HttpStatus::CONTINUE] = "100 Continue";
+    this->httpStatusMap[HttpStatus::OK] = "200 OK";
+    this->httpStatusMap[HttpStatus::CREATED] = "201 Created";
+    this->httpStatusMap[HttpStatus::NO_CONTENT] = "204 No Content";
+    this->httpStatusMap[HttpStatus::MOVED_PERMANENTLY] = "301 Moved Permanently";
+    this->httpStatusMap[HttpStatus::BAD_REQUEST] = "400 Bad Request";
+    this->httpStatusMap[HttpStatus::FORBIDDEN] = "403 Forbidden";
+    this->httpStatusMap[HttpStatus::NOT_FOUND] = "404 Not Found";
+    this->httpStatusMap[HttpStatus::NOT_ALLOWED] = "405 Method Not Allowed";
+    this->httpStatusMap[HttpStatus::TIMEOUT] = "408 Request Timeout";
+    this->httpStatusMap[HttpStatus::CONFLICT] = "409 Conflict";
+    this->httpStatusMap[HttpStatus::PAYLOAD_TOO_LARGE] = "413 Payload Too Large";
+    this->httpStatusMap[HttpStatus::SERVER_ERR] = "500 Internal Server Error";
+    this->httpStatusMap[HttpStatus::NOT_IMPLEMENTED] = "501 Not Implemented";
+    this->httpStatusMap[HttpStatus::SERVICE_UNAVAILABLE] = "503 Service Unavailable";
+
+	this->_status = HttpStatus::ZERO;
 	this->_determineLocation();
 	if (this->_checkErrors())
 		return;
@@ -22,6 +39,7 @@ Response::Response(Request &request, const ServerConfig &config) : _request(requ
 		this->_executeCgi();
 	else
 		this->_generateBody(this->_response.fullURI);
+	this->_status = HttpStatus::SERVER_ERR;
 	this->_generateStatusLine();
 	this->_generateHeaders();
 }
@@ -51,8 +69,8 @@ std::string Response::getResponse() const
 
 void Response::_generateStatusLine()
 {
-	// TODO: mocking the status line
-	this->_response.statusLine = "HTTP/1.1 200 OK";
+	this->_response.statusLine = "HTTP/1.1 ";
+	this->_response.statusLine += this->httpStatusMap[this->_status];
 }
 
 void Response::_generateHeaders()
@@ -136,7 +154,10 @@ bool Response::_checkError404()
 {
 	struct stat buffer;
 	if (stat(this->_response.fullURI.c_str(), &buffer) != 0)
+	{
+		this->_status = HttpStatus::NOT_FOUND;
 		return true;
+	}
 	return false;
 }
 

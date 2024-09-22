@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 13:06:55 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/21 11:36:48 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/22 17:24:55 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,11 @@ private:
 	const ServerConfig &_config;
 	t_response _response;
 	LocationConfig * _locationConfig;
+	std::map<HttpStatus::Code, std::string> httpStatusMap;
 
+	HttpStatus::Code _status;
+
+	void _fillStatusMap();
 	void _determineLocation();
 	void	_generateFullURI();
 	void _generateStatusLine();
