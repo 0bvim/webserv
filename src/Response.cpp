@@ -6,7 +6,7 @@
 /*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/21 10:26:03 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/21 12:23:53 by bmoretti         ###   ########.fr       */
+/*   Updated: 2024/09/22 17:32:22 by bmoretti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,34 @@
 
 Response::Response(Request &request, const ServerConfig &config) : _request(request), _config(config)
 {
+	this->httpStatusMap[HttpStatus::CONTINUE] = "100 Continue";
+    this->httpStatusMap[HttpStatus::OK] = "200 OK";
+    this->httpStatusMap[HttpStatus::CREATED] = "201 Created";
+    this->httpStatusMap[HttpStatus::NO_CONTENT] = "204 No Content";
+    this->httpStatusMap[HttpStatus::MOVED_PERMANENTLY] = "301 Moved Permanently";
+    this->httpStatusMap[HttpStatus::BAD_REQUEST] = "400 Bad Request";
+    this->httpStatusMap[HttpStatus::FORBIDDEN] = "403 Forbidden";
+    this->httpStatusMap[HttpStatus::NOT_FOUND] = "404 Not Found";
+    this->httpStatusMap[HttpStatus::NOT_ALLOWED] = "405 Method Not Allowed";
+    this->httpStatusMap[HttpStatus::TIMEOUT] = "408 Request Timeout";
+    this->httpStatusMap[HttpStatus::CONFLICT] = "409 Conflict";
+    this->httpStatusMap[HttpStatus::PAYLOAD_TOO_LARGE] = "413 Payload Too Large";
+    this->httpStatusMap[HttpStatus::SERVER_ERR] = "500 Internal Server Error";
+    this->httpStatusMap[HttpStatus::NOT_IMPLEMENTED] = "501 Not Implemented";
+    this->httpStatusMap[HttpStatus::SERVICE_UNAVAILABLE] = "503 Service Unavailable";
+
+	this->_status = HttpStatus::ZERO;
 	this->_determineLocation();
 	if (this->_checkErrors())
 		return;
 	this->_identifyCGI();
 	if (this->_response.isCGI)
 		this->_executeCgi();
+	else
+		this->_generateBody(this->_response.fullURI);
+	this->_status = HttpStatus::SERVER_ERR;
 	this->_generateStatusLine();
 	this->_generateHeaders();
-	std::string path("web/index.html");
-	this->_generateBody(path);
 }
 
 void Response::_determineLocation()
@@ -35,7 +53,7 @@ void Response::_determineLocation()
 		if (request.uri.find(server.locations[j].path) != std::string::npos)
 		{
 			this->_locationConfig = &server.locations[j];
-			this->_response.fullURI = server.locations[j].root + request.uri;
+			this->_response.fullURI = "." + server.locations[j].root + request.uri;
 			return;
 		}
 	}
@@ -51,8 +69,8 @@ std::string Response::getResponse() const
 
 void Response::_generateStatusLine()
 {
-	// TODO: mocking the status line
-	this->_response.statusLine = "HTTP/1.1 200 OK";
+	this->_response.statusLine = "HTTP/1.1 ";
+	this->_response.statusLine += this->httpStatusMap[this->_status];
 }
 
 void Response::_generateHeaders()
@@ -71,6 +89,7 @@ void Response::_generateBody(std::string &path)
 		std::string bufferStr;
 		buffer << file.rdbuf();
 		bufferStr = buffer.str();
+		OUTNL(bufferStr);
 		this->_response.body = bufferStr;
 		this->_response.headers["Content-Length"] = itoa(bufferStr.size());
 		this->_response.headers["Content-Type"] = "text/html";
@@ -135,7 +154,10 @@ bool Response::_checkError404()
 {
 	struct stat buffer;
 	if (stat(this->_response.fullURI.c_str(), &buffer) != 0)
+	{
+		this->_status = HttpStatus::NOT_FOUND;
 		return true;
+	}
 	return false;
 }
 
@@ -197,32 +219,35 @@ void Response::_executeCgi()
 
 	if (pid == 0)
 	{
-    std::string executablePath;
-    if (endsWith(script_path, "py"))
-    {
-      if (isInterpreterInstalled("python3"))
-        executablePath = PY_PATH;
-    }
-    else if (endsWith(script_path, "go"))
-    {
-      if (isInterpreterInstalled("go"))
-        executablePath = GO_PATH;
-    }
-    else if (endsWith(script_path, "php"))
-    {
-      if (isInterpreterInstalled("php"))
-        executablePath = PHP_PATH;
-    }
-    else
-      OUTNL("Not a valid CGI");
+		std::string executablePath;
+		if (endsWith(script_path, ".py"))
+		{
+		if (isInterpreterInstalled("python3"))
+			executablePath = PY_PATH;
+		}
+		else if (endsWith(script_path, ".go"))
+		{
+		if (isInterpreterInstalled("go"))
+			executablePath = GO_PATH;
+		}
+		else if (endsWith(script_path, ".php"))
+		{
+		if (isInterpreterInstalled("php"))
+			executablePath = PHP_PATH;
+		}
+		else
+		{
+			OUTNL("Not a valid CGI");
+		}
 
 		// Redirect stdout to the client socket
 		fd = open("temp", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		dup2(fd, STDOUT_FILENO);
 
 		// Execute the CGI script
-		char *args[] = {const_cast<char *>(executablePath.c_str()), 
-                    const_cast<char *>(script_path.c_str()), NULL};
+		char *args[] = {const_cast<char *>(executablePath.c_str()),
+					const_cast<char *>(script_path.c_str()), NULL};
+		std::cerr << "Chegou aqui\n";
 		execve(args[0], args, NULL);
 
 		// If execve fails
