@@ -91,7 +91,6 @@ void Server::_handleConnection(int client_fd)
 		size_t size = resp.getResponse().size();
 		send(client_fd, resp.getResponse().c_str(), size, flags);
 		this->_clients[client_fd]->clearBuff();
-    epoll_ctl(_epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
 	}
 }
 
