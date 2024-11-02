@@ -2,13 +2,13 @@
 // Created by vinicius on 11/2/24.
 //
 
-#include "check_file.h"
+#include "CheckFile.hpp"
 
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 
-void check_file(std::string fileName)
+void CheckFile(const std::string& fileName)
 {
     if (!fopen(fileName.c_str(), "r"))
     {

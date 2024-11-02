@@ -4,19 +4,37 @@
 
 
 #include <cstdlib>
+#include <iostream>
+#include <string>
+
 #include "common.hpp"
-#include "parser_config_file/check_file.h"
+#include "parser_config_file/CheckFile.hpp"
+#include "parser_config_file/ConfigParser.hpp"
 
 int main(int argc, char* argv[])
 {
     std::string configuration_file;
 
-    if(argc < 2)
+    if (argc < 2)
         configuration_file = DEFAULT_CONFIG_FILE;
     else
         configuration_file = argv[1];
 
-    check_file(configuration_file);
+    CheckFile(configuration_file);
+
+    try
+    {
+        ConfigParser parser;
+        std::vector<Server> servers = parser.parse(configuration_file);
+
+        for (std::vector<Server>::const_iterator it = servers.begin(); it != servers.end(); ++it)
+           std::cout << "Server on port: " << it->port << std::endl;
+    }
+    catch (const ConfigParseError& e)
+    {
+        std::cerr << "Error on line " << e.getLine() << ": " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
