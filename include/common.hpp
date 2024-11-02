@@ -1,53 +1,14 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   common.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: bmoretti <bmoretti@student.42sp.org.br>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/27 11:24:48 by bmoretti          #+#    #+#             */
-/*   Updated: 2024/09/21 12:22:35 by bmoretti         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
+// Server consts
 #define PORT 8042
 #define BUFFER_SIZE 1024
 #define MAX_CONNECTIONS 5
 #define MAX_EVENTS 10
+#define DEFAULT_CONFIG_FILE "../config/default.config"
 
-// C libs
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <arpa/inet.h>
-#include <asm-generic/socket.h>
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/epoll.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-
-// C++ LIBS
-#include <cerrno>
-#include <algorithm>
-#include <cstring>
-#include <csignal>
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <vector>
-#include <map>
-
-// FORMATTING
+// Colors
 #define BOLD(text) "\033[1m" << text << "\033[0m"
 #define UNDERLINE(text) "\033[4m" << text << "\033[0m"
 
@@ -73,10 +34,5 @@
 #define BG_BROWN(text) "\033[43m" << text << "\033[0m"
 #define BG_WHITE(text) "\033[47m" << text << "\033[0m"
 #define BG_BLACK(text) "\033[40m" << text << "\033[0m"
-
-// functions
-std::string itoa(int value);
-std::string trim(const std::string &str);
-std::vector<std::string> split(const std::string &str, char delimiter);
 
 #endif

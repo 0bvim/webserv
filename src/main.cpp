@@ -1,21 +1,22 @@
-#include "../include/Server.hpp"
-#include "../include/Config.hpp"
-#include "../include/Events.hpp"
+//
+// Created by vinicius on 11/2/24.
+//
 
-int main(int ac, char **av)
+
+#include <cstdlib>
+#include "common.hpp"
+#include "parser_config_file/check_file.h"
+
+int main(int argc, char* argv[])
 {
-	std::string file;
+    std::string configuration_file;
 
-	ac == 2 ? file = av[1] : file = DEFAULT_CONFIG_FILE;
-	try
-	{
-		Config config(file);
-		Events events(config.getServers());
-		events.run();
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << RED("Error: ") << e.what() << std::endl;
-	}
-	return 0;
+    if(argc < 2)
+        configuration_file = DEFAULT_CONFIG_FILE;
+    else
+        configuration_file = argv[1];
+
+    check_file(configuration_file);
+
+    return EXIT_SUCCESS;
 }
