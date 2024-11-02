@@ -5,6 +5,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <string>
 
 #include "common.hpp"
@@ -28,7 +29,8 @@ int main(int argc, char* argv[])
         std::vector<Server> servers = parser.parse(configuration_file);
 
         for (std::vector<Server>::const_iterator it = servers.begin(); it != servers.end(); ++it)
-           std::cout << "Server on port: " << it->port << std::endl;
+            std::cout << *it << std::endl;
+
     }
     catch (const ConfigParseError& e)
     {
