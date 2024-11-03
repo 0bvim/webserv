@@ -158,7 +158,7 @@ struct Server
             << "  client_max_size: " << server.client_max_size << "\n"
             << "  error_pages: {";
         for (std::map<int, std::string>::const_iterator it = server.error_pages.begin(); it != server.error_pages.end(); ++it)
-            os << " " << page.first << ": " << page.second << ",";
+            os << " " << it->first << ": " << it->second << ",";
         os << " }\n"
             << "  locations: [";
         for (size_t i = 0; i < server.locations.size(); ++i)

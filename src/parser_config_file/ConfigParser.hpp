@@ -9,7 +9,8 @@
 #include <fstream>
 #include "ConfigTypes.hpp"
 
-class ConfigParser {
+class ConfigParser
+{
 private:
     std::vector<Server> _servers;
     std::string _current_token;

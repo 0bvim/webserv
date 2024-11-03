@@ -12,7 +12,7 @@
 #include "parser_config_file/CheckFile.hpp"
 #include "parser_config_file/ConfigParser.hpp"
 
-int main(int argc, char* argv[])
+int main(const int argc, char* argv[])
 {
     std::string configuration_file;
 
