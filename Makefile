@@ -39,7 +39,4 @@ re: fclean all
 	@echo "Rebuilding..."
 
 run: all
-	@./$(NAME) default.conf
-
-run2: all
-	@./$(NAME) arquivo.conf
+	@./$(NAME) config/default.conf
