@@ -6,7 +6,7 @@
 #define BUFFER_SIZE 1024
 #define MAX_CONNECTIONS 5
 #define MAX_EVENTS 10
-#define DEFAULT_CONFIG_FILE "../config/default.config"
+#define DEFAULT_CONFIG_FILE "../config/default.conf"
 
 // Colors
 #define BOLD(text) "\033[1m" << text << "\033[0m"
