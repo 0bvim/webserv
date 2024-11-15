@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <exception>
+#include <ostream>
 
 class ConfigParseError : public std::exception
 {
