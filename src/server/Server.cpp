@@ -48,7 +48,7 @@ int Server_class::acceptClient() {
     }
 
     const std::vector<int>& sockets = _network.getServerSockets();
-    if (sockets.empty()) {
+    if (!sockets.size()) {
         return -1;
     }
 
