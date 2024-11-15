@@ -28,6 +28,11 @@ int main(const int argc, char* argv[])
         ConfigParser parser;
         std::vector<Server> servers = parser.parse(configuration_file);
 
+        // TODO: configurar portar e hosts
+        // TODO: configurar rotas
+        // TODO: configurar sockets
+        // TODO: server run (loop do epoll)
+
         for (std::vector<Server>::const_iterator it = servers.begin(); it != servers.end(); ++it)
             std::cout << *it << std::endl;
 
