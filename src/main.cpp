@@ -35,13 +35,7 @@ void handleClientRequest(int client_fd, const Location& location) {
 
 int main(int argc, char* argv[])
 {
-    std::string configuration_file;
-
-    if (argc < 2)
-        configuration_file = DEFAULT_CONFIG_FILE;
-    else
-        configuration_file = argv[1];
-
+    std::string configuration_file = (argc == 1) ? DEFAULT_CONFIG_FILE : argv[1];
     CheckFile(configuration_file);
 
     try
