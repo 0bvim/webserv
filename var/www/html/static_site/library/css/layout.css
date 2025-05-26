@@ -1,0 +1,82 @@
+/* FONTES UTILIZADAS PELO SISTEMA */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+/* SISTEMA */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Open Sans';
+}
+
+body {
+	background-color: #272727;
+	background-image: url("../img/wallpaper.png");
+	color: #FFF;
+}
+
+#limite {
+	margin: 50px auto 100px;
+	width: 70%;
+}
+
+@media screen and (min-width: 1345px) {
+	#limite {
+		margin: 50px auto 100px;
+		width: 75%;
+	}
+}
+
+@media screen and (min-width: 1057px) and (max-width: 1344px) {
+	#limite {
+		margin: 50px auto 100px;
+		width: 80%;
+	}
+}
+
+@media screen and (min-width: 769px) and (max-width: 1056px) {
+	#limite {
+		margin: 50px auto 100px;
+		width: 85%;
+	}
+}
+
+@media screen and (min-width: 481px) and (max-width: 768px) {
+	#limite {
+		margin: 50px auto 100px;
+		width: 90%;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	#limite {
+		margin: 50px auto 100px;
+		width: 95%;
+	}
+}
+
+.imagem {
+	margin: 0 auto 0;
+	width: 350px;
+	height: 350px;
+	display: block;
+	border-radius: 50%;
+}
+
+#title {
+	margin: 35px auto 25px;
+	font-size: 2em;
+	font-weight: bold;
+	text-align: center;
+}
+
+#info {
+	font-size: .7em;
+	text-align: center;
+}
+
+#information {
+	margin: 0 auto 35px;
+	font-size: 1.5em;
+	text-align: center;
+}

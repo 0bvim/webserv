@@ -1,0 +1,14 @@
+name: webreq
+
+services:
+  cpp-dev:
+    build: .
+    volumes:
+      - ./src:/app/src
+      - ./include:/app/include
+      - ./Makefile:/app/Makefile
+      - ./build:/app/build
+      - ./scripts:/app/scripts
+    ports:
+      - "8080:8080"
+    working_dir: /app

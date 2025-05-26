@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/nes.min.css">
+	<link rel="stylesheet" href="css/style.css">
+	<!-- <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" /> -->
+	<title>WebServer - Formulario</title>
+</head>
+<body>ł
+	<main class="nes-container is-centered margin-10 height-full ">
+		<h1 class="nes-text is-primary title">Web Server</h1>
+		<nav class="header-nav">
+			<ul class="nes-list nav-flex">
+				<li><a class="nes-btn" href="/">Home</a></li>
+				<li><a class="nes-btn" href="/formulario">Formulário</a></li>
+				<li><a class="nes-btn" href="/cgi">CGI</a></li>
+				<li><a class="nes-btn" href="/contato">Contato</a></li>
+			</ul>
+		</nav>
+		<section class="nes-container with-title is-centered pos-relative height-100">
+
+			<h2 class="nes-text is-primary title">WebServ</h2>
+			<form action="/post" method="post">
+				<div class="nes-field is-inline">
+					<label for="name">Name</label>
+					<input type="text" id="name" class="nes-input" name="name" placeholder="Name">
+				</div>
+				<div class="nes-field is-inline">
+					<label for="email">Email</label>
+					<input type="text" id="email" class="nes-input" name="email" placeholder="Email">
+				</div>
+				<div class="nes-field is-inline">
+					<label for="phone">Phone</label>
+					<input type="text" id="phone" class="nes-input" name="phone" placeholder="Phone">
+				</div>
+				<button type="submit" class="nes-btn is-primary">Submit</button>
+				<input type="submit" value="Submit">
+			</form>
+
+		</section>
+	</main>
+	<script src="./js/script.js"></script>
+</body>
+</html>

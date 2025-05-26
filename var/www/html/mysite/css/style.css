@@ -1,0 +1,43 @@
+html, body
+{
+    height: 100%;
+    margin: 0;
+}
+
+h1
+{
+    /* color: RED; */
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.nav-flex
+{
+    display: flex;
+    /* border: 2px solid red; */
+    justify-content: space-around;
+    margin-top: 1rem;
+}
+
+.margin-10
+{
+    margin: 10px;
+}
+
+.height-full
+{
+    min-height: 95%;
+    position: relative;
+}
+
+.pos-relative
+{
+    position: relative;
+}
+
+.height-100
+{
+    min-height: 100lvh;
+    height: 100%;
+}
+

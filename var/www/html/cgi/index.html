@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Server Functionality Tests</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --primary-color: #007bff; /* Blue */
+                --primary-hover-color: #0056b3;
+                --success-color: #28a745; /* Green for success */
+                --error-color: #dc3545; /* Red for error */
+                --background-color: #e9eff6;
+                --card-background: #ffffff;
+                --text-color: #343a40;
+                --border-color: #dee2e6;
+                --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.05);
+                --shadow-medium: 0 8px 16px rgba(0, 0, 0, 0.1);
+            }
+
+            body {
+                font-family: "Roboto", sans-serif;
+                margin: 0;
+                padding: 40px 20px;
+                background-color: var(--background-color);
+                color: var(--text-color);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                min-height: 100vh;
+                box-sizing: border-box;
+            }
+
+            h1 {
+                color: #2c3e50;
+                font-weight: 700;
+                margin-bottom: 40px;
+                text-align: center;
+                font-size: 2.5em;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                gap: 30px; /* Space between test sections */
+                max-width: 800px;
+                width: 100%;
+            }
+
+            .test-section {
+                background-color: var(--card-background);
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: var(--shadow-medium);
+                border: 1px solid var(--border-color);
+                transition:
+                    transform 0.2s ease,
+                    box-shadow 0.2s ease;
+            }
+
+            .test-section:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--shadow-medium);
+            }
+
+            h2 {
+                color: var(--primary-color);
+                border-bottom: 2px solid var(--primary-color);
+                padding-bottom: 10px;
+                margin-top: 0;
+                margin-bottom: 25px;
+                font-weight: 600;
+                font-size: 1.8em;
+            }
+
+            a {
+                display: inline-block;
+                background-color: var(--primary-color);
+                color: white;
+                padding: 12px 25px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: 500;
+                transition:
+                    background-color 0.3s ease,
+                    transform 0.2s ease,
+                    box-shadow 0.3s ease;
+                box-shadow: var(--shadow-light);
+            }
+
+            a:hover {
+                background-color: var(--primary-hover-color);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-medium);
+            }
+
+            form {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .form-group {
+                display: flex;
+                flex-direction: column;
+            }
+
+            label {
+                font-weight: 400;
+                color: #555;
+                margin-bottom: 8px;
+                font-size: 1.1em;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="file"] {
+                padding: 12px 15px;
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                font-size: 16px;
+                box-sizing: border-box;
+                transition:
+                    border-color 0.3s ease,
+                    box-shadow 0.3s ease;
+                width: 100%; /* Ensure inputs take full width */
+            }
+
+            input[type="text"]:focus,
+            input[type="email"]:focus,
+            input[type="file"]:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+                outline: none;
+            }
+
+            input[type="submit"] {
+                background-color: var(--primary-color);
+                color: white;
+                padding: 12px 25px;
+                border: none;
+                border-radius: 6px;
+                font-size: 16px;
+                cursor: pointer;
+                transition:
+                    background-color 0.3s ease,
+                    transform 0.2s ease,
+                    box-shadow 0.3s ease;
+                font-weight: 500;
+                align-self: flex-start; /* Align button to the left */
+                box-shadow: var(--shadow-light);
+            }
+
+            input[type="submit"]:hover {
+                background-color: var(--primary-hover-color);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-medium);
+            }
+
+            .success {
+                color: var(--success-color);
+                font-weight: 700;
+                margin-top: 10px;
+            }
+
+            .error {
+                color: var(--error-color);
+                font-weight: 700;
+                margin-top: 10px;
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                h1 {
+                    font-size: 2em;
+                    margin-bottom: 30px;
+                }
+                .container {
+                    padding: 0 10px;
+                    gap: 20px;
+                }
+                .test-section {
+                    padding: 25px;
+                }
+                h2 {
+                    font-size: 1.5em;
+                    margin-bottom: 20px;
+                }
+                input[type="submit"],
+                a {
+                    width: 100%;
+                    text-align: center;
+                    align-self: stretch; /* Make buttons stretch in mobile */
+                }
+            }
+
+            @media (max-width: 480px) {
+                body {
+                    padding: 20px 10px;
+                }
+                h1 {
+                    font-size: 1.8em;
+                }
+                .test-section {
+                    padding: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Server Functionality Tests</h1>
+
+        <div class="container">
+            <div class="test-section">
+                <h2>1. CGI Test</h2>
+                <p>
+                    This test verifies if the server can handle CGI GET requests
+                    by passing a parameter and expecting a response.
+                </p>
+                <a href="cgi_test.php?name=CGITest">Test CGI GET Request</a>
+            </div>
+
+            <div class="test-section">
+                <h2>2. File Upload Test</h2>
+                <p>
+                    Use this form to test file upload functionality. Select a
+                    file and click "Upload File" to send it to the server.
+                </p>
+                <form
+                    action="upload_handler.php"
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+                    <div class="form-group">
+                        <label for="fileToUpload">Select File:</label>
+                        <input
+                            type="file"
+                            name="fileToUpload"
+                            id="fileToUpload"
+                            required
+                        />
+                    </div>
+                    <input type="submit" value="Upload File" />
+                </form>
+            </div>
+
+            <div class="test-section">
+                <h2>3. Form Submission Test</h2>
+                <p>
+                    This test checks basic form POST submission. Enter your name
+                    and email, then submit the form.
+                </p>
+                <form action="form_handler.php" method="post">
+                    <div class="form-group">
+                        <label for="username">Name:</label>
+                        <input
+                            type="text"
+                            name="username"
+                            id="username"
+                            placeholder="Your Name"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            placeholder="your.email@example.com"
+                            required
+                        />
+                    </div>
+                    <input type="submit" value="Submit Form" />
+                </form>
+            </div>
+
+            <div class="test-section">
+                <h2>4. Cookie Test</h2>
+                <p>
+                    This test checks if the server can set and read cookies.
+                    Click the link to run the cookie test script.
+                </p>
+                <a href="cookies.php">Test Cookies</a>
+            </div>
+        </div>
+    </body>
+</html>
