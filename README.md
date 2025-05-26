@@ -14,7 +14,6 @@ A lightweight, non-blocking HTTP server written in C++98, compliant with HTTP 1.
 - [Testing](#testing)
 - [Bonus Features](#bonus-features)
 - [Limitations](#limitations)
-- [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
 - [Resources](#resources)
@@ -61,6 +60,12 @@ Run the server with an optional configuration file:
 ```
 If no file is provided, the server uses a default configuration (see [`configurations/default.conf`](configurations/default.conf)).
 
+--- 
+You can run it with docker too:
+```bash
+# ensure that you have docker or docker desktop installed and running in your machine!
+make up # run program in a docker container with a hand made hot reload.
+```
 ---
 
 ## Configuration
