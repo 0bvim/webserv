@@ -1,6 +1,6 @@
 # Webserv - HTTP Server in C++98
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![CodeQL](https://github.com/0bvim/webserv/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/0bvim/webserv/actions/workflows/github-code-scanning/codeql) [![Feature CI](https://github.com/0bvim/webserv/actions/workflows/feature.yml/badge.svg)](https://github.com/0bvim/webserv/actions/workflows/feature.yml)
 
 A lightweight, non-blocking HTTP server written in C++98, compliant with HTTP 1.1 standards. Designed to handle static content, file uploads, CGI scripts, and more. Includes bonus features like session management and multiple CGI support.
 
